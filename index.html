@@ -3,6 +3,10 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="robots" content="noindex,nofollow">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="theme-color" content="#0e1623">
 <title>ロゴ撃ち落とし</title>
 <style>
 :root{--bg:#dbe6f2;--ink:#18222f;--gr:#8996a8;color-scheme:light;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}
@@ -11,10 +15,16 @@
 html{scroll-padding-top:env(safe-area-inset-top,0px)}
 html,body{height:100%;margin:0;overflow:hidden;background:var(--bg);overscroll-behavior:none}
 canvas{display:block;width:100%;height:100%;touch-action:none;user-select:none;-webkit-user-select:none}
+#jb{position:fixed;left:50%;top:30%;transform:translateX(-50%);width:min(320px,calc(100vw - 32px));display:none;flex-direction:column;gap:10px;z-index:5}
+#jb input{font-size:16px;padding:12px;border-radius:10px;border:2px solid var(--ink);background:var(--bg);color:var(--ink);width:100%;box-sizing:border-box}
+#jb button{font-size:17px;font-weight:800;padding:14px;border:0;border-radius:12px;background:#2e7d32;color:#fff}
+#jb button:disabled{opacity:.5}
+#jmsg{min-height:1.4em;font-size:13px;color:#e65100;text-align:center;font-weight:700}
 </style>
 </head>
 <body>
 <canvas id="c"></canvas>
+<div id="jb"><input id="jn" maxlength="12" placeholder="ニックネーム(12文字まで)" autocomplete="off"><input id="jp" placeholder="合言葉" autocomplete="off" autocapitalize="off"><button id="jgo">参加する</button><div id="jmsg"></div></div>
 <script>
 const cv=document.getElementById('c'),ctx=cv.getContext('2d');
 let W=0,H=0,col={bg:'#0e1623',ink:'#e8edf5',gr:'#27344a'};
@@ -66,7 +76,7 @@ const IK=Object.keys(IMS),SKEY='lgsave1',TTL=['新人ドライバー','見習い
 const PK={TOYOTA:['魅了の範囲+30%','魅了された敵が倒れると連鎖','ハート嵐(全敵に魅了)'],HONDA:['VTECが入りやすくなる','VTEC中は貫通','Type R(VTECがさらに強化)'],SUBARU:['左右の間隔が広がる','3連になる','アイサイト(軽く誘導)'],MAZDA:['曲がる向きを引き方で選べる','かすめてもヒット','二重らせん'],NISSAN:['ノックバック強化','GT-R(着弾点が爆発)','NISMO(縦一列に衝撃)'],SUZUKI:['扇が広がる','5連になる','多段ヒット(威力1.8倍)'],MITSUBISHI:['貫通するたび加速','貫通するたび威力+30%','防具・バリアを無視'],LEXUS:['二重の衝撃波','衝撃波の範囲が大幅に拡大','衝撃波が魅了も与える'],DAIHATSU:['反射回数+1','反射のたびに威力+50%','反射のたびに分裂']};
 const upc=(n,lv)=>n==='LEXUS'?300+250*lv:80+70*lv;
 const UC={SUBARU:300,MAZDA:400,NISSAN:600,MITSUBISHI:500,LEXUS:2500,DAIHATSU:350};
-const defSave=()=>({best:{},bestStage:0,maxCombo:0,kills:0,plays:0,coins:0,xp:0,z:{},up:{},tp:{},unl:['TOYOTA','HONDA','SUZUKI'],u:{life:0,drop:0},set:{se:true,bgm:true},day:'',streak:0,m:[]});
+const defSave=()=>({best:{},bestStage:0,maxCombo:0,kills:0,plays:0,coins:0,xp:0,z:{},up:{},tp:{},net:{},unl:['TOYOTA','HONDA','SUZUKI'],u:{life:0,drop:0},set:{se:true,bgm:true},day:'',streak:0,m:[]});
 function loadSave(){let d=defSave();try{const r=JSON.parse(localStorage.getItem(SKEY)||'null');if(r)d=Object.assign(d,r)}catch(e){}return d}
 const SV=loadSave();
 function save(){try{localStorage.setItem(SKEY,JSON.stringify(SV))}catch(e){}}
@@ -82,12 +92,12 @@ function startGame(m,idx){mode=m;reset();if(m==='country')stage=idx;gmset=GS();g
 function endGame(){if(state!=='play')return;const r=run;r.score=score;r.stage=stage;r.coins=Math.floor(score/40)+(mode==='normal'?stage*15:0);const k=bk(),old=SV.best[k]||0;r.prev=old;r.newRec=score>old;if(r.newRec)SV.best[k]=score;
 SV.coins+=r.coins;SV.xp+=Math.floor(score/15)+r.kills;SV.plays++;SV.kills+=r.kills;SV.maxCombo=Math.max(SV.maxCombo,r.maxCombo);if(mode==='normal')SV.bestStage=Math.max(SV.bestStage,stage);
 SV.m.forEach(m=>{if(m.k==='kills')m.p+=r.kills;else if(m.k==='combo')m.p=Math.max(m.p,r.maxCombo);else if(m.k==='score')m.p=Math.max(m.p,score);else if(m.k==='stage'&&mode==='normal')m.p=Math.max(m.p,stage);else if(m.k==='supp')m.p+=r.supp});
-r.near=(mode==='normal'&&stk>0&&curS().q-stk<=4)?'あと'+(curS().q-stk)+'体で次の国でした':'';lastRes={score:r.score,rank:rankOf(r.score),newRec:r.newRec,coins:r.coins};state='over';over0=performance.now();save()}
+r.near=(mode==='normal'&&stk>0&&curS().q-stk<=4)?'あと'+(curS().q-stk)+'体で次の国でした':'';submitRun(r);lastRes={score:r.score,rank:rankOf(r.score),newRec:r.newRec,coins:r.coins};state='over';over0=performance.now();save()}
 function btn(id,x,y,w,h,label,o={}){btns.push({id,x,y,w,h});rr(x,y,w,h,12);ctx.fillStyle=o.bg||'rgba(128,140,160,.22)';ctx.fill();ctx.lineWidth=2;ctx.strokeStyle=o.line||col.ink;ctx.stroke();if(o.sub){T(label,x+w/2,y+h/2-8,o.sz||18,'center',o.c||col.ink,'800');T(o.sub,x+w/2,y+h/2+12,12,'center',o.c||col.ink,'500')}else T(label,x+w/2,y+h/2,o.sz||18,'center',o.c||col.ink,'800')}
 const hdr=t=>{btn('home',12,12,92,38,'← ホーム',{sz:14});T(t,W/2,31,20,'center',col.ink,'800');T('💰'+SV.coins,W-14,31,15,'right',col.ink,'700')};
 function uiTap(p){if(state==='over'){if(performance.now()-over0>700)state='home';return}for(const b of btns)if(inR(p,b)){ui(b.id);return}}
 function ui(id){snd(500,.06,'square',.05,1.3);
-if(id==='home'){state='home';rstArm=false}else if(['sel','garage','zukan','rec','mis','set'].includes(id)){state=id;rstArm=false}
+if(id==='home'){state='home';rstArm=false}else if(id==='rank'){rstArm=false;if(NET.on()&&!(SV.net&&SV.net.joined))state='join';else{state='rank';fetchBoard()}}else if(id.startsWith('rk:')){const v=id.slice(3);if(v==='all'||v==='week')rk.kind=v;else rk.mode=v;fetchBoard()}else if(['sel','garage','zukan','rec','mis','set','join'].includes(id)){state=id;rstArm=false}
 else if(id==='start')startGame('normal');else if(id==='time')startGame('time');else if(/^c\d$/.test(id))startGame('country',+id[1]);else if(id==='retry')startGame(mode,stage);
 else if(id.startsWith('tn:')){tsel=id.slice(3);state='tune'}else if(id.startsWith('tp:')){const k=id[3],t2=SV.tp[tsel]||(SV.tp[tsel]={a:0,s:0,r:0}),lv=SV.up[tsel]||0;if(id[4]==='+'&&t2.a+t2.s+t2.r<lv)t2[k]++;else if(id[4]==='-'&&t2[k]>0)t2[k]--;save()}else if(id==='tpr'){SV.tp[tsel]={a:0,s:0,r:0};save()}else if(id.startsWith('up:')){const n=id.slice(3),lv=SV.up[n]||0,c=upc(n,lv);if(lv<5&&SV.coins>=c){SV.coins-=c;SV.up[n]=lv+1;save();snd(800,.15,'sine',.08,1.6)}}
 else if(id.startsWith('ulk:')){const n=id.slice(4);if(SV.coins>=UC[n]){SV.coins-=UC[n];SV.unl.push(n);save();snd(900,.2,'triangle',.08,1.6)}}
@@ -96,7 +106,29 @@ else if(id.startsWith('claim:')){const m=SV.m[+id.slice(6)];if(m&&m.p>=m.n&&!m.c
 else if(id.startsWith('z:'))zsel=id.slice(2);
 else if(id==='snd'){muted=!muted;SV.set.se=!muted;save()}else if(id==='bgm'){bgmOn=!bgmOn;SV.set.bgm=bgmOn;save()}
 else if(id==='reset'){if(rstArm){const k=defSave();Object.keys(SV).forEach(x=>delete SV[x]);Object.assign(SV,k);muted=false;bgmOn=true;dailyInit();save();rstArm=false}else rstArm=true}}
+const NET={url:'https://shojzezwkalfanigckzl.supabase.co',key:'sb_publishable_WF7yNd8UHFBPoIYtMbraLA_a06rDt1P',on(){return /^(eyJ|sb_publishable_)/.test(this.key)}};
+let sess=null,rk={kind:'all',mode:'normal',rows:[],loading:false,err:''};
+try{sess=JSON.parse(localStorage.getItem('lgsess')||'null')}catch(e){}
+function saveSess(j){sess={at:j.access_token,rt:j.refresh_token,exp:Date.now()+(j.expires_in||3600)*1000-60000,uid:j.user&&j.user.id};try{localStorage.setItem('lgsess',JSON.stringify(sess))}catch(e){}}
+async function nreq(path,o){o=o||{};const r=await fetch(NET.url+path,{method:'POST',headers:Object.assign({apikey:NET.key,'Content-Type':'application/json'},o.h||{}),body:JSON.stringify(o.b||{})});const tx=await r.text();let j=null;try{j=JSON.parse(tx)}catch(e){}if(!r.ok)throw new Error((j&&(j.message||j.msg||j.error_description||j.hint))||('HTTP '+r.status));return j}
+async function ensure(){if(sess&&Date.now()<sess.exp)return sess;if(sess&&sess.rt){try{saveSess(await nreq('/auth/v1/token?grant_type=refresh_token',{b:{refresh_token:sess.rt}}));return sess}catch(e){sess=null}}saveSess(await nreq('/auth/v1/signup',{b:{data:{}}}));return sess}
+async function rpc(fn,args){const s=await ensure();return nreq('/rest/v1/rpc/'+fn,{b:args,h:{Authorization:'Bearer '+s.at}})}
+async function fetchBoard(){rk.loading=true;rk.err='';const k=rk.kind,m=rk.mode;try{const rows=await rpc(k==='all'?'leaderboard':'weekly_leaderboard',{p_mode:m,p_limit:20});if(rk.kind===k&&rk.mode===m)rk.rows=rows||[]}catch(e){rk.err=String(e.message||e)}rk.loading=false}
+async function submitRun(r){if(!NET.on()||!(SV.net&&SV.net.joined))return;r.sent='sending';try{await rpc('submit_run',{p_mode:bk(),p_score:r.score,p_kills:r.kills,p_combo:r.maxCombo,p_stage:r.stage,p_duration:Math.max(1,Math.round(mode==='time'?90-Math.max(0,timeLeft):t)),p_daily:null,p_version:'v1'});r.sent='ok'}catch(e){r.sent='err';r.sendErr=String(e.message||e);if(/not a member/.test(r.sendErr)){SV.net.joined=false;save()}}}
+async function doJoin(){const nk=document.getElementById('jn').value.trim(),ps=document.getElementById('jp').value.trim(),m=document.getElementById('jmsg'),b=document.getElementById('jgo');if(!nk||!ps){m.textContent='ニックネームと合言葉を入れてください';return}b.disabled=true;m.textContent='確認中...';try{await rpc('join_game',{p_nickname:nk,p_pass:ps});SV.net={joined:true,nick:nk};save();m.textContent='';state='rank';fetchBoard()}catch(e){const q=String(e.message||e);m.textContent=/bad passcode/.test(q)?'合言葉が違います':'うまくいきませんでした: '+q}b.disabled=false}
+try{document.getElementById('jgo').addEventListener('click',doJoin)}catch(e){}
+function joinBox(on){const e=document.getElementById('jb');if(e){const d=on?'flex':'none';if(e.style.display!==d)e.style.display=d}}
 const SCR={
+rank(){btn('home',12,12,92,38,'← ホーム',{sz:14});T('ランキング',W/2,31,20,'center',col.ink,'800');
+if(!NET.on()){T('オンライン設定が未入力です',W/2,H*.4,16,'center',col.ink,'700');return}
+const w2=(W-40)/2;
+[['rk:all','全期間',rk.kind==='all'],['rk:week','直近7日',rk.kind==='week']].forEach((a,i)=>btn(a[0],16+i*(w2+8),62,w2,40,a[1],{sz:15,bg:a[2]?'#1565c0':'rgba(128,140,160,.22)',c:a[2]?'#fff':col.ink}));
+[['rk:normal','ノーマル',rk.mode==='normal'],['rk:time','90秒',rk.mode==='time']].forEach((a,i)=>btn(a[0],16+i*(w2+8),108,w2,40,a[1],{sz:15,bg:a[2]?'#2e7d32':'rgba(128,140,160,.22)',c:a[2]?'#fff':col.ink}));
+const n=Math.max(3,Math.min(20,Math.floor((H-250)/32)));
+if(rk.err)T(rk.err.slice(0,40),W/2,200,13,'center','#c62828','700');else if(rk.loading&&!rk.rows.length)T('読み込み中...',W/2,200,15,'center',col.ink,'600');else if(!rk.rows.length)T('まだ記録がありません',W/2,200,15,'center',col.ink,'600');
+rk.rows.slice(0,n).forEach((r,i)=>{const y=180+i*32,me=sess&&r.player_id===sess.uid;if(me){rr(12,y-15,W-24,30,8);ctx.fillStyle='rgba(255,193,7,.28)';ctx.fill()}T(i<3?['🥇','🥈','🥉'][i]:(i+1)+'',34,y,i<3?18:14,'center',col.ink,'800');T(r.nickname,62,y,15,'left',col.ink,me?'800':'600');T(''+r.score,W-24,y,16,'right',col.ink,'800')});
+T('あなた: '+((SV.net&&SV.net.nick)||'未登録'),W/2,H-24,13,'center',col.ink,'600')},
+join(){btn('home',12,12,92,38,'← ホーム',{sz:14});T('参加登録',W/2,31,20,'center',col.ink,'800');T('友人から聞いた合言葉と、',W/2,H*.17,14,'center',col.ink,'600');T('好きなニックネームを入力してください',W/2,H*.17+22,14,'center',col.ink,'600')},
 home(){const bw=Math.min(320,W-40),x=(W-bw)/2;
 T('ロゴ撃ち落とし',W/2,H*.12,Math.min(34,W/10.5),'center',col.ink,'900');T('日本車で撃ち落とせ!',W/2,H*.12+34,15,'center',col.ink,'600');
 T('Lv.'+lvOf()+' '+TTL[Math.min(5,lvOf()/3|0)]+'   💰'+SV.coins,W/2,H*.25,15,'center',col.ink,'700');
@@ -104,7 +136,7 @@ T('BEST '+(SV.best.normal||0)+'   最高ステージ '+(SV.bestStage+1),W/2,H*.2
 if(loginMsg)T(loginMsg,W/2,H*.25+50,13,'center','#e65100','700');if(lastRes)T('前回 '+lastRes.score+'点 ランク'+lastRes.rank+(lastRes.newRec?'  NEW RECORD!':'')+'  💰+'+lastRes.coins,W/2,H*.25+72,13,'center',lastRes.newRec?'#ff9100':col.ink,'700');
 btn('start',x,H*.41,bw,66,'スタート',{bg:'#2e7d32',c:'#fff',line:'#1b5e20',sz:26});
 const it=[['sel','ステージ選択'],['garage','ガレージ'],['zukan','図鑑'],['rec','記録'],['mis','ミッション'+(claimable()?' ❗':'')],['set','設定']],w2=(bw-12)/2;
-it.forEach((a,i)=>btn(a[0],x+(i%2)*(w2+12),H*.41+84+(i>>1)*62,w2,52,a[1],{sz:16}))},
+it.forEach((a,i)=>btn(a[0],x+(i%2)*(w2+12),H*.41+84+(i>>1)*62,w2,52,a[1],{sz:16}));btn('rank',x,H*.41+84+3*62,bw,52,'🏆 ランキング'+(NET.on()?'':'(未設定)'),{sz:16,bg:'rgba(255,193,7,.2)',line:'#ffb300'})},
 sel(){hdr('ステージ選択');const bw=W-32;
 btn('start',16,70,bw,56,'ノーマル(耐久)',{sub:'BEST '+(SV.best.normal||0),bg:'#2e7d32',c:'#fff'});
 btn('time',16,134,bw,56,'90秒スコアアタック',{sub:'BEST '+(SV.best.time||0),bg:'#1565c0',c:'#fff'});
@@ -139,11 +171,11 @@ if(r.newRec)T('NEW RECORD!',W/2,H*.19+38,22*(1+.06*Math.sin(performance.now()/12
 T(rk,W/2,H*.40,Math.min(96,W*.25),'center',{S:'#ff9100',A:'#e53935',B:'#1e88e5',C:'#78909c'}[rk],'900');
 [['撃破',r.kills],['最大コンボ',r.maxCombo],['到達ステージ',(r.stage+1)+' '+sgi(r.stage).nm],['獲得コイン','💰'+r.coins]].forEach((a,i)=>{T(a[0],x+8,H*.52+i*26,15,'left',col.ink,'600');T(''+a[1],x+bw-8,H*.52+i*26,15,'right',col.ink,'800')});
 if(r.near)T(r.near,W/2,H*.52+110,14,'center','#e65100','700');
-T('タップでホームへ',W/2,H*.52+160,18,'center',col.ink,'800');if(performance.now()-over0>6000)state='home'}};
+if(r.sent)T(r.sent==='ok'?'📡 記録を送信しました':r.sent==='sending'?'📡 送信中...':'📡 送信できませんでした',W/2,H*.52+134,13,'center',r.sent==='err'?'#c62828':col.ink,'700');T('タップでホームへ',W/2,H*.52+160,18,'center',col.ink,'800');if(performance.now()-over0>6000)state='home'}};
 function drawScreen(){const now=performance.now(),dt=Math.min(.05,(now-flT)/1000||0);flT=now;ctx.clearRect(0,0,W,H);ctx.fillStyle=col.bg;ctx.fillRect(0,0,W,H);
 if(!fl.length)for(let i=0;i<14;i++)fl.push({k:IK[Math.random()*IK.length|0],x:rnd(0,W),y:rnd(-H,H),v:rnd(25,60),r:rnd(18,30)});
 ctx.globalAlpha=.3;fl.forEach(f=>{f.y+=f.v*dt;if(f.y>H+40){f.y=-40;f.x=rnd(0,W);f.k=IK[Math.random()*IK.length|0]}disc(f.x,f.y,f.r,'#fff',f.k,'#222','#ccc')});ctx.globalAlpha=1;
-btns=[];const f=SCR[state];if(f)f()}
+btns=[];const f=SCR[state];if(f)f();joinBox(state==='join')}
 function bgmStart(){if(bgmTm)return;bgmTm=setInterval(bgmStep,150)}
 function bgmStep(){if(!bgmOn||paused||document.hidden)return;const k=state==='play'?(stage<1?0:1+(stage-1)%8):0,root=[110,98,123,87,131,104,116,92,98][k],i=bgmI++,P=[0,2,4,7,9,12,14,16];
 if(i%4===0)snd(root*Math.pow(2,[0,5,7,3][(i>>4)%4]/12),.3,'triangle',.05,0,1);
