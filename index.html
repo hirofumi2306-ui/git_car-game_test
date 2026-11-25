@@ -9,9 +9,9 @@
 <meta name="theme-color" content="#0e1623">
 <link rel="manifest" href="manifest.json">
 <link rel="apple-touch-icon" href="apple-touch-icon.png">
-<meta name="apple-mobile-web-app-title" content="ロゴ撃ち">
+<meta name="apple-mobile-web-app-title" content="頑張ろうニッポン">
 <meta name="apple-mobile-web-app-status-bar-style" content="black">
-<title>ロゴ撃ち落とし</title>
+<title>頑張ろうニッポン！</title>
 <style>
 :root{--bg:#dbe6f2;--ink:#18222f;--gr:#8996a8;color-scheme:light;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}
 @media (prefers-color-scheme:dark){:root:not([data-theme="light"]){--bg:#0e1623;--ink:#e8edf5;--gr:#27344a;color-scheme:dark}}
@@ -87,7 +87,7 @@ const STG=[
 {nm:'韓国',q:14,names:['HYUNDAI','KIA'],gps:[GP.HK],flag:['#fff','#cd2e3a','#0047a0'],tint:'rgba(0,71,160,.12)',gm:'beat',gd:'ビートで速度が変わる',pos:[[127.5,36.5]],cx:127,cy:36},
 {nm:'アメリカ',q:16,names:['CHEVY','FORD','TESLA','CADILLAC','JEEP','DODGE','CHRYSLER'],gps:[GP.GM,{n:['JEEP','DODGE','CHRYSLER'],c:'#ab47bc'}],flag:['#b22234','#fff','#3c3b6e'],tint:'rgba(60,59,110,.14)',gm:'wind',gd:'強風で弾が流される',pos:[[-98,39]],cx:-98,cy:40}];
 let mode='normal',run={kills:0,maxCombo:0,supp:0,rec:0},timeLeft=90,zsel='',zt='e',ssel='',tsel='TOYOTA',rstArm=false,loginMsg='',lastRes=null,btns=[],fl=[],flT=0,bgmOn=true,bgmI=0,bgmTm=0;
-const IK=Object.keys(IMS),SKEY='lgsave1',TT=[[1,'ペーパー以下の何か'],[2,'助手席の置物'],[3,'ガソリン入れ間違えがち'],[5,'洗車で満足する人'],[7,'駐車だけ神'],[9,'コンビニ駐車場の覇者'],[11,'信号ダッシュ小僧'],[13,'ETCバーに祈る人'],[16,'SAグルメ評論家'],[19,'ナビに逆らう男'],[22,'一方通行を逆走しかけた者'],[25,'峠でも直進する者'],[28,'ロゴに話しかける人'],[32,'燃費自慢おじさん'],[36,'撃墜王(自称)'],[40,'ロゴの供養係'],[45,'トヨタに土下座した者'],[50,'ガソリンより愛が重い'],[56,'前世エンジン'],[63,'ロゴ撃ち落としの神(笑)']];
+const IK=Object.keys(IMS),SKEY='lgsave1',TT=[[1,'ペーパー以下の何か'],[2,'助手席の置物'],[3,'ガソリン入れ間違えがち'],[5,'洗車で満足する人'],[7,'駐車だけ神'],[9,'コンビニ駐車場の覇者'],[11,'信号ダッシュ小僧'],[13,'ETCバーに祈る人'],[16,'SAグルメ評論家'],[19,'ナビに逆らう男'],[22,'一方通行を逆走しかけた者'],[25,'峠でも直進する者'],[28,'ロゴに話しかける人'],[32,'燃費自慢おじさん'],[36,'撃墜王(自称)'],[40,'ロゴの供養係'],[45,'トヨタに土下座した者'],[50,'ガソリンより愛が重い'],[56,'前世エンジン'],[63,'頑張ろうニッポン！の神(笑)']];
 const PK={TOYOTA:['魅了の範囲+30%','魅了された敵が倒れると連鎖','ハート嵐(全敵に魅了)'],HONDA:['VTECが入りやすくなる','VTEC中は貫通','Type R(VTECがさらに強化)'],SUBARU:['左右の間隔が広がる','3連になる','アイサイト(軽く誘導)'],MAZDA:['曲がる向きを引き方で選べる','かすめてもヒット','二重らせん'],NISSAN:['ノックバック強化','GT-R(着弾点が爆発)','NISMO(縦一列に衝撃)'],SUZUKI:['扇が広がる','5連になる','多段ヒット(威力1.8倍)'],MITSUBISHI:['貫通するたび加速','貫通するたび威力+30%','防具・バリアを無視'],LEXUS:['二重の衝撃波','衝撃波の範囲が大幅に拡大','衝撃波が魅了も与える'],DAIHATSU:['反射回数+1','反射のたびに威力+50%','反射のたびに分裂']};
 const upc=(n,lv)=>n==='LEXUS'?300+250*lv:80+70*lv;
 const UC={SUBARU:300,MAZDA:400,NISSAN:600,MITSUBISHI:500,LEXUS:2500,DAIHATSU:350};
@@ -275,11 +275,11 @@ TT.forEach((t,i)=>{const y=126+i*rh,ok=i<=cur;T((ok?'🎖 ':'🔒 ')+t[1],24,y+r
 sync(){const c=cs.conf;if(!c){state='home';return}const d=c.data||{};T('どちらのデータを使いますか?',W/2,44,19,'center',col.ink,'800');T('クラウドと、この端末で、データが違います',W/2,72,12,'center',col.ink,'600');
 const bw=W-40,card=(y,ttl,x,id,lab)=>{rr(20,y,bw,150,12);ctx.fillStyle='rgba(128,140,160,.16)';ctx.fill();T(ttl,32,y+20,15,'left','#1565c0','900');const L=1+Math.floor(Math.sqrt((x.xp||0)/50));T('Lv.'+L+'  '+ttAt(L),32,y+46,14,'left',col.ink,'800');T('💰'+(x.coins||0)+'   プレイ '+(x.plays||0)+'回   BEST '+((x.best&&x.best.normal)||0),32,y+70,12,'left',col.ink,'600');btn(id,32,y+90,bw-24,48,lab,{sz:15,bg:id==='syncc'?'#2e7d32':'rgba(128,140,160,.22)',c:id==='syncc'?'#fff':col.ink})};
 card(100,'☁ クラウド',d,'syncc','クラウドのデータを使う');card(268,'📱 この端末',SV,'syncl','この端末のデータで上書き');T('選ばなかった方は、上書きされます',W/2,H-30,12,'center','#c62828','700')},
-join(){const L={new:['アカウントを作成','ニックネーム・パスワード・友人から聞いた合言葉'],login:['おかえりなさい','ニックネームとパスワードでログイン'],setpw:['パスワードを設定してください','機種変更しても、同じアカウントで続けられます']}[jm];T('ロゴ撃ち落とし',W/2,H*.09,28,'center',col.ink,'900');T(L[0],W/2,H*.16,19,'center','#1565c0','800');T(L[1],W/2,H*.205,12,'center',col.ink,'600')},
+join(){const L={new:['アカウントを作成','ニックネーム・パスワード・友人から聞いた合言葉'],login:['おかえりなさい','ニックネームとパスワードでログイン'],setpw:['パスワードを設定してください','機種変更しても、同じアカウントで続けられます']}[jm];T('頑張ろうニッポン！',W/2,H*.09,28,'center',col.ink,'900');T(L[0],W/2,H*.16,19,'center','#1565c0','800');T(L[1],W/2,H*.205,12,'center',col.ink,'600')},
 home(){const tt=performance.now(),L=lvOf(),dtt=Math.min(.05,(tt-(hLast||tt))/1000);hLast=tt;
 {const nm='🎖 '+TT[ttI()][1],pw=Math.min(W-130,nm.length*13+30),px=12,py=12;rr(px,py,pw,30,15);ctx.fillStyle='#fff3c4';ctx.fill();ctx.lineWidth=2;ctx.strokeStyle='#ffb300';ctx.stroke();ctx.save();rr(px,py,pw,30,15);ctx.clip();const sx=px+((tt/9)%(pw+120))-60;ctx.fillStyle='rgba(255,255,255,.65)';ctx.fillRect(sx,py,18,30);ctx.restore();T(nm,px+pw/2,27,13,'center','#7a4a00','900')}
 T('💰'+SV.coins,W-58,27,15,'right',col.ink,'800');btn('set',W-48,10,38,38,'⚙',{sz:20});
-const ty=H>=720?34:0;if(ty)T('ロゴ撃ち落とし',W/2,70,24,'center',col.ink,'900');
+const ty=H>=720?34:0;if(ty)T('頑張ろうニッポン！',W/2,70,24,'center',col.ink,'900');
 const ly=72+ty;{const a=xpAt(L),b=xpAt(L+1),pr=Math.max(0,Math.min(1,(SV.xp-a)/(b-a))),x0=(W-232)/2;T('Lv.'+L,x0+50,ly,14,'right',col.ink,'800');rr(x0+60,ly-5,172,10,5);ctx.fillStyle='rgba(128,140,160,.3)';ctx.fill();rr(x0+60,ly-5,Math.max(8,172*pr),10,5);ctx.fillStyle='#ffb300';ctx.fill()}
 const my=ly+22;
 if(loginMsg)T(loginMsg,W/2,my,12,'center','#e65100','700');else if(SV.net&&SV.net.joined&&!SV.net.acct&&NET.on())btn('setpw',W/2-140,my-11,280,22,'⚠ パスワード未設定(機種変更で引き継げません)',{sz:11,bg:'rgba(255,152,0,.2)',line:'#ef6c00'});
@@ -359,7 +359,7 @@ let BM=null,BP=null;
 function mkA(f){try{const a=new Audio(f);a.loop=true;a.preload='auto';a.volume=0;return a}catch(e){return null}}
 function bgmFile(){if(bgTried)return;bgTried=true;BM=mkA('bgm_menu.mp3');BP=mkA('bgm_play.mp3')}
 function bgmCtl(){const play=state==='play',tg=play?BP:BM;[BM,BP].forEach(a=>{if(!a)return;const on=a===tg&&bgmOn&&!muted&&!document.hidden;let v=0,r=1;if(on){if(play){v=.36;if(enemies.some(e=>e.boss)){v=.44;r=enemies.some(e=>e.boss&&e.rage)?1.08:1.03}if(lives<=1)r=Math.max(r,1.04);if(paused)v=.08}else v=.2}
-a.volume=Math.max(0,Math.min(1,a.volume+(v-a.volume)*.12));if(a.volume<.01&&!on){if(!a.paused)a.pause()}else if(on&&a.paused)a.play().catch(()=>{});a.playbackRate=a.playbackRate+(r-a.playbackRate)*.08})}
+if(a!==tg){a.volume=0;if(!a.paused)a.pause();return}a.volume=Math.max(0,Math.min(1,a.volume+(v-a.volume)*.12));if(!on){if(!a.paused)a.pause()}else if(a.paused)a.play().catch(()=>{});a.playbackRate=a.playbackRate+(r-a.playbackRate)*.08})}
 const SB={};let sfxL=0;
 function sfxLoad(){if(sfxL)return;sfxL=1;try{AC=AC||new(window.AudioContext||window.webkitAudioContext)();['siren','boom','crack','sparkle','ping','fanfare','click','cheer','whoosh'].forEach(k=>fetch('sfx/'+k+'.mp3').then(r=>r.arrayBuffer()).then(b=>new Promise((ok,ng)=>AC.decodeAudioData(b,ok,ng))).then(d=>{SB[k]=d}).catch(()=>{}))}catch(e){}}
 function sfx(k,v,dur,rate){if(muted||!SB[k])return false;try{if(AC.state==='suspended')AC.resume();const s=AC.createBufferSource(),g=AC.createGain(),n=AC.currentTime;s.buffer=SB[k];if(rate)s.playbackRate.value=rate;const vv=v==null?.8:v;g.gain.setValueAtTime(vv,n);if(dur){g.gain.setValueAtTime(vv,n+dur-.3);g.gain.linearRampToValueAtTime(0,n+dur)}s.connect(g);g.connect(AC.destination);s.start();if(dur)s.stop(n+dur);return true}catch(e){return false}}

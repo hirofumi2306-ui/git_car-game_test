@@ -1,6 +1,6 @@
 {
-  "name": "ロゴ撃ち落とし",
-  "short_name": "ロゴ撃ち",
+  "name": "頑張ろうニッポン！",
+  "short_name": "頑張ろうニッポン",
   "start_url": "./index.html",
   "scope": "./",
   "display": "standalone",
