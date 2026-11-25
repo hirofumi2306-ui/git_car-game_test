@@ -114,7 +114,7 @@ let OY=0;
 function btn(id,x,y,w,h,label,o={}){btns.push({id,x,y:y+OY,w,h});if(o.pulse){ctx.save();const q=1+.035*Math.sin(performance.now()/240);ctx.translate(x+w/2,y+h/2);ctx.scale(q,q);ctx.translate(-x-w/2,-y-h/2);}rr(x,y,w,h,12);ctx.fillStyle=o.bg||'rgba(128,140,160,.22)';ctx.fill();ctx.lineWidth=2;ctx.strokeStyle=o.line||col.ink;ctx.stroke();if(o.sub){T(label,x+w/2,y+h/2-8,o.sz||18,'center',o.c||col.ink,'800');T(o.sub,x+w/2,y+h/2+12,12,'center',o.c||col.ink,'500')}else T(label,x+w/2,y+h/2,o.sz||18,'center',o.c||col.ink,'800');if(o.pulse)ctx.restore()}
 const ttAt=L=>{let i=0;TT.forEach((t,j)=>{if(L>=t[0])i=j});return TT[i][1]};
 const hdr=t=>{T(t,W/2,31,20,'center',col.ink,'800');T('💰'+SV.coins,W-14,31,15,'right',col.ink,'700')};
-const BAR=90,PAGES=['home','garage','zukan','rank','rec'],TABS=[['home','🏠','ホーム'],['garage','🔧','ガレージ'],['zukan','📖','図鑑'],['rank','🏆','ランク'],['rec','📋','記録']],TABOF={home:'home',garage:'garage',zukan:'zukan',rank:'rank',join:'rank',rec:'rec'},BARS=['home','garage','zukan','rank','join','rec','set'];
+const BAR=90,PAGES=['home','garage','zukan','rank','rec'],TABS=[['home','🏠','ホーム'],['garage','🔧','ガレージ'],['zukan','📖','図鑑'],['rank','🏆','ランク'],['rec','📋','記録']],TABOF={home:'home',garage:'garage',zukan:'zukan',rank:'rank',join:'rank',rec:'rec',mode:'home'},BARS=['home','garage','zukan','rank','join','rec','set','mode'];
 const MODES=[['stage','ボス戦','⚔'],['normal','チャレンジ','♾'],['time','90秒','⏱']],STGS=['','独','伊','仏','英','印','中','韓','米'];
 let hm=['stage','normal','time'].includes(SV.hm)?SV.hm:'stage',hs=SV.hs||1,gt='c',gsel='',rt='r',sw=null,HMC={y:0,h:0};
 const DF=[{n:'ノーマル',sp:1,spw:1,at:1,hp:1,rw:1,sc:1,c:'#2e7d32'},{n:'ハード',sp:1.15,spw:1.25,at:1.6,hp:1.2,rw:1.5,sc:1.3,c:'#ef6c00'},{n:'地獄',sp:1.3,spw:1.5,at:2.4,hp:1.5,rw:2.5,sc:2,c:'#c62828'}];
@@ -170,9 +170,9 @@ function lpFire(){const s0=sw;if(!s0||s0.moved||state==='play')return;s0.long=tr
 function drawTip(){const L=tip.t.split('\n');ctx.save();ctx.font='700 13px '+FONT;const w=Math.min(W-24,Math.max(...L.map(l=>ctx.measureText(l).width))+28),h=L.length*20+18;const x=Math.max(12,Math.min(W-12-w,tip.x-w/2));let y=tip.y-h-18;if(y<8)y=tip.y+34;rr(x,y,w,h,12);ctx.fillStyle='rgba(15,22,34,.95)';ctx.fill();ctx.lineWidth=2;ctx.strokeStyle='#ffd54f';ctx.stroke();L.forEach((l,k)=>T(l,x+14,y+19+k*20,13,'left',k?'#dfe7f1':'#ffd54f',k?'600':'900'));ctx.restore()}
 function carStep(d){hi=((hi+d)%BT.length+BT.length)%BT.length;cOff+=d*cS;SV.hc=hi;rawSave();spinT=.5;if(!sfx('whoosh',.6))snd(620,.05,'square',.04,1.3)}
 function menuUp(e){const s0=sw;sw=null;if(!s0)return;clearTimeout(s0.lp);if(s0.long){infoCar='';tip=null;return}if(state==='play')return;const p=pt(e),dx=p.x-s0.x,dy=p.y-s0.y;
-if(!s0.moved){uiTap({x:s0.x,y:s0.y});return}
+if(!s0.moved){uiTap({x:s0.x,y:s0.y},p);return}
 if(s0.car&&state==='home'){if(Math.abs(dx)>38&&Math.abs(dx)>Math.abs(dy)*.8)carStep(dx<0?1:-1);return}
-const pi=PAGES.indexOf(TABOF[state]);if(pi<0||gsel||state==='set')return;
+const pi=PAGES.indexOf(TABOF[state]);if(pi<0||gsel||state==='set'||state==='mode')return;
 if(Math.abs(dx)>55&&Math.abs(dy)<Math.abs(dx)*.7&&s0.x>18&&s0.x<W-18){const n=pi+(dx<0?1:-1);if(n>=0&&n<PAGES.length){if(!sfx('whoosh',.8,0,1.25))snd(500,.06,'sine',.05,1.4);ui(PAGES[n])}}}
 function hmStep(d){const i=MODES.findIndex(m=>m[0]===hm),n=Math.max(0,Math.min(MODES.length-1,i+d));if(n!==i){hm=MODES[n][0];SV.hm=hm;rawSave();snd(600,.05,'square',.04,1.2)}}
 function gTabs(){const w2=(W-40)/2;[['gt:c','日本車','c',carUp()],['gt:s','サプライヤー','s',supUp()]].forEach((a,i)=>btn(a[0],16+i*(w2+8),58,w2,36,a[1]+(a[3]?' ⬆':''),{sz:15,bg:gt===a[2]?'#1565c0':'rgba(128,140,160,.22)',c:gt===a[2]?'#fff':col.ink}))}
@@ -198,7 +198,7 @@ for(let i=0;i<5;i++)T('Lv'+(i+1)+'  '+q.ds[i],32,y0+206+i*20,13,'left',i+1===L?'
 T(q.tr[0],32,y0+318,12,'left',col.ink,'500');T(q.tr[1],32,y0+336,12,'left',col.ink,'500');
 const cost=L<5?supCost(L):0,can=L<5&&SV.coins>=cost;btn('spu:'+q.k,24,y0+362,W-48,48,L>=5?'MAX':'レベルアップ 💰'+cost,{sz:17,bg:can?'#2e7d32':'rgba(128,140,160,.22)',c:can?'#fff':col.ink})}}
 const tfx=[],cf=[];let stPrev='',stT=0;
-function uiTap(p){tfx.push({x:p.x,y:p.y,t:performance.now()});if(state==='over'&&performance.now()-over0<700)return;for(let i=btns.length-1;i>=0;i--){const b=btns[i];if(inR(p,b)){if(b.id!=='x'&&!sfx('click',.8,.5))snd(700,.03,'sine',.04,1.2);ui(b.id);return}}}
+function uiTap(p,p2){tfx.push({x:p.x,y:p.y,t:performance.now()});if(state==='over'&&performance.now()-over0<700)return;for(let i=btns.length-1;i>=0;i--){const b=btns[i];if(inR(p,b)){if(p2&&!inR(p2,b))return;if(b.id!=='x'&&!sfx('click',.8,.5))snd(700,.03,'sine',.04,1.2);ui(b.id);return}}}
 function ui(id){snd(500,.06,'square',.05,1.3);if(id.startsWith('tab:'))id=id.slice(4);{const pi=PAGES.indexOf(id),ci=PAGES.indexOf(TABOF[state]);sdir=(pi>=0&&ci>=0&&pi!==ci)?Math.sign(pi-ci):0}
 if(id==='home'){state='home';rstArm=false}else if(id==='rank'){rstArm=false;if(NET.on()&&!(SV.net&&SV.net.joined))openJoin('new');else if(NET.on()&&!SV.net.acct&&!SV.net.skip)openJoin('setpw');else{state='rank';fetchBoard()}}else if(id==='syncc'){if(cs.conf){applyCloud(cs.conf);cs.conf=null;cs.msg='同期済み'}state='home'}else if(id==='syncl'){if(cs.conf){SV.net.srev=cs.conf.rev;SV.net.dirty=1;cs.gen++;cs.conf=null;rawSave();cloudSync()}state='home'}else if(id==='logout'){doLogout()}else if(id==='acct'){openJoin('new')}else if(id==='setpw'){openJoin('setpw')}else if(id.startsWith('rk:')){const v=id.slice(3);if(v==='all'||v==='week'||v==='day'||v==='league')rk.kind=v;else rk.mode=v;fetchBoard()}else if(id==='mis'||id==='title'){rt=id==='mis'?'m':'t';state='rec';gsel=''}else if(id==='sel'){state='home'}else if(['garage','zukan','rec','set','join'].includes(id)){state=id;rstArm=false;gsel=''}
 else if(id.startsWith('hm:')){hm=id.slice(3);SV.hm=hm;rawSave()}else if(id==='hmp'||id==='hmn'){hmStep(id==='hmn'?1:-1)}else if(id.startsWith('hs:')){hs=+id.slice(3);SV.hs=hs;rawSave()}else if(id.startsWith('hc:')){tsel=id.slice(3);gt='c';state='garage';gsel='car:'+tsel;sdir=0}else if(id.startsWith('df:')){const i=+id.slice(3);if(difOk(i)){dif=i;SV.df=i;rawSave()}else loginMsg='🔒 '+DF[i].n+'は'+(i===1?'ノーマル':'ハード')+'でボス戦を3回クリアで解放'}else if(id==='sortie'){state='mode'}else if(id==='go'){if(hm==='stage')startGame('country',hs);else if(hm==='daily')startGame('time',0,1);else startGame(hm)}else if(id.startsWith('gt:')){gt=id.slice(3);gsel=''}else if(id.startsWith('gs:')){tsel=id.slice(3);gsel='car:'+tsel}else if(id.startsWith('gp:')){gsel='sup:'+id.slice(3)}else if(id==='gclose'){gsel=''}else if(id.startsWith('gg:')){state='garage';gt='s';gsel='sup:'+id.slice(3)}else if(id.startsWith('rt:')){rt=id.slice(3)}
@@ -284,14 +284,14 @@ const ly=72+ty;{const a=xpAt(L),b=xpAt(L+1),pr=Math.max(0,Math.min(1,(SV.xp-a)/(
 const my=ly+22;
 if(loginMsg)T(loginMsg,W/2,my,12,'center','#e65100','700');else if(SV.net&&SV.net.joined&&!SV.net.acct&&NET.on())btn('setpw',W/2-140,my-11,280,22,'⚠ パスワード未設定(機種変更で引き継げません)',{sz:11,bg:'rgba(255,152,0,.2)',line:'#ef6c00'});
 const bh=H<700?56:68,sy=H-BAR-10-bh,carTop=my+14,carBot=sy-8;HCR={y0:carTop,y1:carBot};
-const nC=BT.length;if(hi<0||hi>=nC)hi=0;const avail=carBot-carTop,Hd=avail>=352?360:300,sc=Math.min(1,avail/Hd,(W-40)/300);cS=300*sc*.9;
+const nC=BT.length;if(hi<0||hi>=nC)hi=0;const avail=carBot-carTop,Hd=avail>=352?360:300,sc=Math.min(avail>=500?1.2:1,avail/Hd,(W-40)/300);cS=300*sc*.9;
 if(!(sw&&sw.car&&sw.moved))cOff-=cOff*(1-Math.pow(.002,dtt));
 [-2,-1,0,1,2].map(q=>({q,pos:q*cS+cOff})).sort((a,b)=>Math.abs(b.pos)-Math.abs(a.pos)).forEach(o=>{const a=Math.abs(o.pos)/cS,ss=Math.max(.6,1-.2*Math.min(a,1.6)),al=Math.max(0,1-.5*Math.min(a,2));if(al<.03||Math.abs(o.pos)>W/2+150*sc*ss)return;const idx=((hi+o.q)%nC+nC)%nC;drawCar(BT[idx].n,idx,W/2+o.pos,carTop+(avail-Hd*sc*ss)/2,sc*ss,al,o.q===0&&Math.abs(o.pos)<1.5,Hd)});
 if(upfx){const u=upfx;ctx.save();u.st.forEach(q=>{const tt2=u.t-q.d;if(tt2<=0||tt2>1.1)return;const k=1.1-tt2;ctx.globalAlpha=Math.min(1,tt2*1.6);T('✦',BALLP.x+Math.cos(q.a)*(BALLP.r*.6+q.v*k),BALLP.y+Math.sin(q.a)*(BALLP.r*.6+q.v*k)-k*30,q.s,'center','#ffd740','900')});ctx.restore();u.t-=dtt;if(u.t<=0)upfx=null}if(spinT>0)spinT=Math.max(0,spinT-dtt);
 btn('sortie',20,sy,W-40,bh,'🚀 出撃!',{bg:'#2e7d32',c:'#fff',line:'#1b5e20',sz:28,pulse:1});
 if(infoCar)drawInfo(infoCar)},
 mode(){btn('home',10,10,44,40,'‹',{sz:26});T('出撃モード',W/2,31,20,'center',col.ink,'800');T('💰'+SV.coins,W-14,31,15,'right',col.ink,'700');
-const bw=W-32,ch=H<700?78:88;
+const bh=H<700?56:66,sy=H-BAR-bh-12,ch=Math.max(70,Math.min(104,Math.floor((sy-12-62-150-16)/3))),bw=W-32;
 const cards=[['stage','⚔ ボス戦','国ごとのステージ。ノルマを倒すとボス出現',false,null],['normal','♾ チャレンジ','ライフが尽きるまで続く耐久戦',true,SV.best['normal'+(dif?'_d'+dif:'')]||0],['time','⏱ 90秒','90秒間のスコアアタック',true,SV.best['time'+(dif?'_d'+dif:'')]||0]];
 cards.forEach((c,i)=>{const y=62+i*(ch+8),on=hm===c[0];rr(16,y,bw,ch,14);ctx.fillStyle=on?'rgba(21,101,192,.22)':'rgba(128,140,160,.14)';ctx.fill();ctx.lineWidth=on?3:1.5;ctx.strokeStyle=on?'#1e88e5':'rgba(128,140,160,.5)';ctx.stroke();
 T(c[1],30,y+26,20,'left',col.ink,'900');fitT(c[2],30,y+52,bw-30,12,col.ink);
@@ -301,7 +301,7 @@ const y3=62+3*(ch+8)+4;let lock=false;
 if(hm==='stage'){lock=!(hs<=1||SV.bestStage>=hs);T('ステージを選ぶ',W/2,y3+8,13,'center',col.ink,'700');const cs2=Math.min(34,(W-32-7*6)/8);for(let k=1;k<=8;k++){const ok=k<=1||SV.bestStage>=k,xx=16+(W-32-(8*cs2+7*6))/2+(k-1)*(cs2+6);btn('hs:'+k,xx,y3+24,cs2,34,ok?STGS[k]:'🔒',{sz:ok?15:12,bg:hs===k?'#1565c0':ok?'rgba(128,140,160,.22)':'rgba(128,140,160,.08)',c:hs===k?'#fff':col.ink})}const S=STG[hs];fitT(S.nm+': '+S.gd,16,y3+76,W-32,12,col.ink);const w3=(W-32-16)/3;DF.forEach((d,i)=>{const ok=difOk(i);btn('df:'+i,16+i*(w3+8),y3+90,w3,32,(ok?'':'🔒 ')+d.n,{sz:13,bg:SV.df===i||(!SV.df&&i===0)?d.c:'rgba(128,140,160,.22)',c:(SV.df||0)===i?'#fff':ok?col.ink:'#8a97a8',line:(SV.df||0)===i?d.c:undefined})})}
 else if(hm==='normal'){T('🏆 この記録がランキングに載ります',W/2,y3+76,12,'center','#2e7d32','800')}
 else{T('🏆 この記録がランキングに載ります',W/2,y3+76,12,'center','#2e7d32','800')}
-const bh=H<700?56:66,sy=H-bh-16;if(lock)btn('x',20,sy,W-40,bh,'🔒 未解放',{sz:22,sub:'チャレンジで国別ステージに到達しよう'});else btn('go',20,sy,W-40,bh,'🚀 スタート!',{bg:'#2e7d32',c:'#fff',line:'#1b5e20',sz:26,pulse:1})},
+if(lock)btn('x',20,sy,W-40,bh,'🔒 未解放',{sz:22,sub:'チャレンジで国別ステージに到達しよう'});else btn('go',20,sy,W-40,bh,'🚀 スタート!',{bg:'#2e7d32',c:'#fff',line:'#1b5e20',sz:26,pulse:1})},
 sel(){hdr('ステージ選択');const bw=W-32;
 btn('start',16,70,bw,56,'ノーマル(耐久)',{sub:'BEST '+(SV.best.normal||0),bg:'#2e7d32',c:'#fff'});
 btn('time',16,134,bw,56,'90秒スコアアタック',{sub:'BEST '+(SV.best.time||0),bg:'#1565c0',c:'#fff'});
