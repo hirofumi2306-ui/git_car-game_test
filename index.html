@@ -153,14 +153,16 @@ const bd=a[0]==='garage'?canUp():a[0]==='rec'?claimable():false;if(bd){ctx.begin
 function fitT(str,x,y,mw,size,c){let z=size;ctx.font='600 '+z+'px '+FONT;while(ctx.measureText(str).width>mw&&z>8){z--;ctx.font='600 '+z+'px '+FONT}T(str,x,y,z,'left',c,'600')}
 const TRC={TOYOTA:'#ff1744',HONDA:'#ffffff',SUBARU:'#2979ff',MAZDA:'#e91e63',NISSAN:'#ff9800',SUZUKI:'#29b6f6',MITSUBISHI:'#ff5252',LEXUS:'#cfd8dc',DAIHATSU:'#ff6e40'};
 const statV=(b,lv)=>[['威力',Math.min(1,b.dmg*(1+.08*lv)/3.6),'#e53935'],['速度',Math.min(1,b.sp*(1+.03*lv)/1.9),'#1e88e5'],['衝撃',Math.min(1,b.kb/12),'#43a047']];
+const rot={y:0,x:0,vy:0,vx:0,drag:false,t:0};
+function rotStep(){const now=performance.now(),dt=Math.min(.05,(now-(rot.t||now))/1000);rot.t=now;if(!rot.drag){rot.y+=rot.vy*dt;rot.x+=rot.vx*dt;const d=Math.exp(-2.4*dt);rot.vy*=d;rot.vx*=d;if(Math.hypot(rot.vy,rot.vx)<.6){const k=Math.min(1,dt*1.6),T2=Math.PI*2;rot.y+=(Math.round(rot.y/T2)*T2-rot.y)*k;rot.x+=(Math.round(rot.x/T2)*T2-rot.x)*k}}return 1}
 function drawCar(n,i,xc,yt,sc,al,act,Hd){const lv=SV.up[n]||0,DW=300,cost=upc(n,lv),can=lv<10&&SV.coins>=cost,x0=xc-DW*sc/2,bob=act?Math.sin(performance.now()/650)*2.5:0,FULL=Hd>=440;
 const b=BT.find(q=>q.n===n),st=statV(b,lv),ov=(st[0][1]+st[1][1]+st[2][1])/3,cx=DW/2,cy0=FULL?132:104,R=FULL?88:70,DR=R+40,cy=cy0+bob;
 ctx.save();ctx.globalAlpha=al;ctx.translate(x0,yt);ctx.scale(sc,sc);
-const spn=act&&spinT>0?Math.max(.06,Math.abs(Math.cos((1-spinT/.5)*Math.PI*2))):act?Math.max(.1,Math.abs(Math.cos(performance.now()/1500))):1,glow=act&&upfx&&upfx.n===n?Math.min(1,upfx.t):0;if(act)BALLP={x:x0+cx*sc,y:yt+cy0*sc,r:R*sc};
+const spn=act&&spinT>0?Math.max(.06,Math.abs(Math.cos((1-spinT/.5)*Math.PI*2))):1,glow=act&&upfx&&upfx.n===n?Math.min(1,upfx.t):0;if(act)BALLP={x:x0+cx*sc,y:yt+cy0*sc,r:R*sc};
 if(act)dial(cx,cy0,DR,ov,72);
 ctx.save();ctx.translate(cx,cy);ctx.scale(spn,1);ctx.translate(-cx,-cy);
 ctx.fillStyle='rgba(0,0,0,.22)';ctx.beginPath();ctx.ellipse(cx,cy0+R+10,R*.7,6,0,0,7);ctx.fill();
-gball(cx,cy,R,n);ctx.save();ctx.beginPath();ctx.arc(cx,cy,R*.84-1,0,7);ctx.clip();slotLogo(n,cx,cy+1,R*1.15,R*.9);ctx.restore();gloss(cx,cy,R);
+gball(cx,cy,R,n);ctx.save();ctx.beginPath();ctx.arc(cx,cy,R*.84-1,0,7);ctx.clip();if(act){const f=rotStep(),cY=Math.cos(rot.y),cX=Math.cos(rot.x),fc=cY*cX;if(fc>.02){ctx.save();ctx.translate(cx+Math.sin(rot.y)*R*.62,cy+1+Math.sin(rot.x)*R*.62);ctx.scale(cY,cX);ctx.globalAlpha=al*Math.min(1,fc*2.2);slotLogo(n,0,0,R*1.15,R*.9);ctx.restore()}}else slotLogo(n,cx,cy+1,R*1.15,R*.9);ctx.restore();gloss(cx,cy,R);
 if(glow>0){ctx.beginPath();ctx.arc(cx,cy,R+6,0,7);ctx.lineWidth=7;ctx.strokeStyle='rgba(255,215,64,'+glow*.9+')';ctx.stroke();ctx.fillStyle='rgba(255,236,130,'+glow*.3+')';ctx.beginPath();ctx.arc(cx,cy,R,0,7);ctx.fill()}ctx.restore();
 let by=0;
 if(act){const ny=FULL?292:236,jy=FULL?326:264;TC(n,cx,ny,FULL?50:40,'center',col.ink,'700');T((JPN[n]||n)+'　Lv.'+lv+' / 10',cx,jy,13,'center',col.sub,'700');
@@ -184,7 +186,7 @@ if(id.startsWith('hs:')){const S=STG[+id.slice(3)];return S.nm+'ボス戦\n'+S.g
 function lpFire(){const s0=sw;if(!s0||s0.moved||state==='play')return;s0.long=true;if(state==='home'&&s0.car){infoCar=BT[hi].n;snd(700,.05,'sine',.04,1.2);return}const b=hitBtn(s0),h=b&&helpFor(b.id);if(h)tip={t:h,x:s0.x,y:s0.y}}
 function drawTip(){const L=tip.t.split('\n');ctx.save();ctx.font='700 13px '+FONT;const w=Math.min(W-24,Math.max(...L.map(l=>ctx.measureText(l).width))+28),h=L.length*20+18;const x=Math.max(12,Math.min(W-12-w,tip.x-w/2));let y=tip.y-h-18;if(y<8)y=tip.y+34;rr(x,y,w,h,12);ctx.fillStyle='rgba(15,22,34,.95)';ctx.fill();ctx.lineWidth=2;ctx.strokeStyle='#ffd54f';ctx.stroke();L.forEach((l,k)=>T(l,x+14,y+19+k*20,13,'left',k?'#dfe7f1':'#ffd54f',k?'600':'900'));ctx.restore()}
 function carStep(d){hi=((hi+d)%BT.length+BT.length)%BT.length;cOff+=d*cS;SV.hc=hi;rawSave();spinT=.5;if(!sfx('whoosh',.6))snd(620,.05,'square',.04,1.3)}
-function menuUp(e){const s0=sw;sw=null;if(!s0)return;clearTimeout(s0.lp);if(s0.long){infoCar='';tip=null;return}if(state==='play')return;const p=pt(e),dx=p.x-s0.x,dy=p.y-s0.y;
+function menuUp(e){const s0=sw;sw=null;rot.drag=false;if(!s0)return;clearTimeout(s0.lp);if(s0.brot)return;if(s0.long){infoCar='';tip=null;return}if(state==='play')return;const p=pt(e),dx=p.x-s0.x,dy=p.y-s0.y;
 if(!s0.moved){uiTap({x:s0.x,y:s0.y},p);return}
 if(s0.car&&state==='home'){if(Math.abs(dx)>38&&Math.abs(dx)>Math.abs(dy)*.8)carStep(dx<0?1:-1);return}
 const pi=PAGES.indexOf(TABOF[state]);if(pi<0||gsel||state==='set'||state==='mode')return;
@@ -702,16 +704,16 @@ const pauseBtn=()=>({x:W-30,y:78,r:18});
 const pauseBtns=()=>[{x:W/2-90,y:H*.5-26,w:180,h:52},{x:W/2-90,y:H*.5+44,w:180,h:52},{x:W/2-90,y:H*.5+114,w:180,h:52}];
 const inR=(p,r)=>p.x>=r.x&&p.x<=r.x+r.w&&p.y>=r.y&&p.y<=r.y+r.h;
 const pt=e=>{const r=cv.getBoundingClientRect();return{x:e.clientX-r.left,y:e.clientY-r.top}};
-cv.addEventListener('pointerdown',e=>{const p=pt(e);bgmStart();if(state==='play'&&acq){acq=null;hstop=0;return}if(state!=='play'){sw={x:p.x,y:p.y,car:state==='home'&&p.y>=HCR.y0&&p.y<=HCR.y1,moved:false};sw.lp=setTimeout(lpFire,450);try{cv.setPointerCapture(e.pointerId)}catch(_){}return}
+cv.addEventListener('pointerdown',e=>{const p=pt(e);bgmStart();if(state==='play'&&acq){acq=null;hstop=0;return}if(state!=='play'){sw={x:p.x,y:p.y,car:state==='home'&&p.y>=HCR.y0&&p.y<=HCR.y1,moved:false,ball:state==='home'&&!gsel&&Math.hypot(p.x-BALLP.x,p.y-BALLP.y)<BALLP.r+6,lx:p.x,ly:p.y,lt:performance.now()};sw.lp=setTimeout(lpFire,450);try{cv.setPointerCapture(e.pointerId)}catch(_){}return}
 if(state==='play'){const pb=pauseBtn();if(Math.hypot(p.x-pb.x,p.y-pb.y)<pb.r+10){paused=!paused;drag=null;return}if(Math.hypot(p.x-(W-30),p.y-118)<24){muted=!muted;bgmOn=!muted;SV.set.se=!muted;SV.set.bgm=bgmOn;save();return}if(paused){const bs=pauseBtns();if(inR(p,bs[0]))paused=false;else if(inR(p,bs[1]))startGame(mode,stage);else if(inR(p,bs[2])){paused=false;endGame();state='home'}return}}
 if(state==='title'){reset();return}
 if(cdT>0)return;if(state==='over'){if(performance.now()-over0>600)reset();return}
 for(let i=0;i<2;i++){const r=slotR(i);if(p.x>=r.x-14&&p.x<=r.x+r.w+14&&p.y>=r.y-16&&p.y<=r.y+r.h+16){if(held[i])useItem(i);return}}
 for(let i=0;i<items.length;i++){const it=items[i];if(Math.hypot(p.x-it.x,p.y-it.y)<66){if(held.length>=2)useItem(0);held.push(it.s);supGain(it);items.splice(i,1);ring(it.x,it.y,'#ffd54f',50);snd(700,.15,'sine',.09,1.8);return}}
 drag={x0:p.x,y0:p.y,x:p.x,y:p.y,gt:0};try{cv.setPointerCapture(e.pointerId)}catch(_){}});
-cv.addEventListener('pointermove',e=>{if(drag){const p=pt(e);drag.x=p.x;drag.y=p.y}if(sw&&state!=='play'){const p=pt(e),dx=p.x-sw.x,dy=p.y-sw.y;if(!sw.moved&&Math.hypot(dx,dy)>24){sw.moved=true;clearTimeout(sw.lp);infoCar='';tip=null}if(sw.car&&sw.moved&&Math.abs(dx)>Math.abs(dy)*.8)cOff=Math.max(-300,Math.min(300,dx))}});
+cv.addEventListener('pointermove',e=>{if(sw&&sw.ball&&state==='home'){const p=pt(e),now=performance.now(),dt=Math.max(.008,(now-sw.lt)/1000),R=Math.max(40,BALLP.r),ddx=(p.x-sw.lx)/R,ddy=(p.y-sw.ly)/R;if(!sw.brot&&Math.hypot(p.x-sw.x,p.y-sw.y)>8){sw.brot=true;sw.moved=true;clearTimeout(sw.lp);rot.drag=true}if(sw.brot){rot.y+=ddx;rot.x+=ddy;rot.vy=Math.max(-14,Math.min(14,ddx/dt));rot.vx=Math.max(-14,Math.min(14,ddy/dt));rot.t=now}sw.lx=p.x;sw.ly=p.y;sw.lt=now;return}if(drag){const p=pt(e);drag.x=p.x;drag.y=p.y}if(sw&&state!=='play'){const p=pt(e),dx=p.x-sw.x,dy=p.y-sw.y;if(!sw.moved&&Math.hypot(dx,dy)>24){sw.moved=true;clearTimeout(sw.lp);infoCar='';tip=null}if(sw.car&&sw.moved&&Math.abs(dx)>Math.abs(dy)*.8)cOff=Math.max(-300,Math.min(300,dx))}});
 const up=()=>{if(drag&&state==='play')fire();drag=null};
-cv.addEventListener('pointerup',e=>{up();menuUp(e)});cv.addEventListener('pointercancel',()=>{drag=null;if(sw)clearTimeout(sw.lp);sw=null;infoCar='';tip=null});
+cv.addEventListener('pointerup',e=>{up();menuUp(e)});cv.addEventListener('pointercancel',()=>{drag=null;rot.drag=false;if(sw)clearTimeout(sw.lp);sw=null;infoCar='';tip=null});
 function hush(){try{[BM,BP].forEach(a=>{if(a&&!a.paused)a.pause()})}catch(e){}try{if(AC&&AC.state==='running')AC.suspend()}catch(e){}}
 document.addEventListener('visibilitychange',()=>{if(document.hidden){if(state==='play'){paused=true;drag=null}hush()}else{try{if(AC&&AC.state==='suspended')AC.resume()}catch(e){}}});addEventListener('pagehide',hush);addEventListener('blur',()=>{if(document.hidden)hush()});
 addEventListener('keydown',e=>{if((e.key==='p'||e.key==='Escape')&&state==='play'){paused=!paused;drag=null}});
