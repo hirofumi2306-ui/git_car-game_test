@@ -386,9 +386,12 @@ if(state==='over'&&run&&(run.newRec||run.newTt)&&cf.length<70&&Math.random()<.6)
 for(let i=cf.length-1;i>=0;i--){const c=cf[i];c.x+=c.vx*dt;c.y+=c.vy*dt;c.a+=dt*6;if(c.y>H+10){cf.splice(i,1);continue}ctx.save();ctx.translate(c.x,c.y);ctx.rotate(c.a);ctx.fillStyle=c.c;ctx.fillRect(-c.r,-c.r/2,c.r*2,c.r);ctx.restore()}
 for(let i=tfx.length-1;i>=0;i--){const q=tfx[i],a=(now-q.t)/420;if(a>=1){tfx.splice(i,1);continue}ctx.save();ctx.globalAlpha=1-a;ctx.strokeStyle='#ffb300';ctx.lineWidth=3;ctx.beginPath();ctx.arc(q.x,q.y,8+a*36,0,7);ctx.stroke();for(let j=0;j<6;j++){const g=j*Math.PI/3+a;ctx.beginPath();ctx.moveTo(q.x+Math.cos(g)*(14+a*30),q.y+Math.sin(g)*(14+a*30));ctx.lineTo(q.x+Math.cos(g)*(22+a*40),q.y+Math.sin(g)*(22+a*40));ctx.stroke()}ctx.restore()}}
 let BM=null,BP=null;
-function mkA(f){try{const a=new Audio(f);a.loop=true;a.preload='auto';a.volume=0;return a}catch(e){return null}}
-function bgmFile(){if(bgTried)return;bgTried=true;BM=mkA('bgm_menu.mp3');BP=mkA('bgm_play.mp3')}
-function bgmCtl(){const play=state==='play',tg=play?BP:BM;[BM,BP].forEach(a=>{if(!a)return;const on=a===tg&&bgmOn&&!muted&&!document.hidden;let v=0,r=1;if(on){if(play){v=.36;if(enemies.some(e=>e.boss)){v=.44}if(warnT>0)v=.1;if(paused)v=.08}else v=.2}
+function mkA(f){try{const a=new Audio();a.preload='none';a.loop=true;a.volume=0;a.src=f;return a}catch(e){return null}}
+// BGMは実際に鳴らす曲だけを、鳴らす時点で初めて読み込む(ログイン前は読み込まない)
+const BGM_SRC={m:'bgm_menu.mp3',p:'bgm_play.mp3'};
+function bgmGet(play){if(play)return BP||(BP=mkA(BGM_SRC.p));return BM||(BM=mkA(BGM_SRC.m))}
+function bgmFile(){}
+function bgmCtl(){const play=state==='play',want=bgmOn&&!muted&&!document.hidden&&state!=='join'&&!needAuth(),tg=want?bgmGet(play):(play?BP:BM);[BM,BP].forEach(a=>{if(!a)return;const on=a===tg&&want;let v=0,r=1;if(on){if(play){v=.36;if(enemies.some(e=>e.boss)){v=.44}if(warnT>0)v=.1;if(paused)v=.08}else v=.2}
 if(a!==tg){a.volume=0;if(!a.paused)a.pause();return}a.volume=Math.max(0,Math.min(1,a.volume+(v-a.volume)*.12));if(!on){if(!a.paused)a.pause()}else if(a.paused)a.play().catch(()=>{});if(a.playbackRate!==1)a.playbackRate=1;try{a.preservesPitch=true;a.webkitPreservesPitch=true}catch(_){}})}
 const SB={};let sfxL=0;
 function sfxLoad(){if(sfxL)return;sfxL=1;try{AC=AC||new(window.AudioContext||window.webkitAudioContext)();['siren','boom','crack','sparkle','ping','fanfare','click','cheer','whoosh'].forEach(k=>fetch('sfx/'+k+'.mp3').then(r=>r.arrayBuffer()).then(b=>new Promise((ok,ng)=>AC.decodeAudioData(b,ok,ng))).then(d=>{SB[k]=d}).catch(()=>{}))}catch(e){}}
