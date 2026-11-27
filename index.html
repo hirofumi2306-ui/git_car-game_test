@@ -103,7 +103,7 @@ const maxL=()=>5+SV.u.life,lvOf=()=>1+Math.floor(Math.sqrt(SV.xp/50)),ttI=()=>{l
 const dk=d=>d.getFullYear()+'-'+(d.getMonth()+1)+'-'+d.getDate();
 const MPOOL=[{k:'kills',n:30,r:60},{k:'kills',n:80,r:130},{k:'combo',n:8,r:70},{k:'combo',n:15,r:140},{k:'score',n:3000,r:80},{k:'score',n:8000,r:160},{k:'stage',n:3,r:90},{k:'supp',n:5,r:60},{k:'supp',n:12,r:130}];
 const mtxt=m=>({kills:'敵を'+m.n+'体倒す(合計)',combo:m.n+'コンボを出す',score:'1回で'+m.n+'点を取る',stage:'ノーマルでステージ'+m.n+'まで進む',supp:'サプライヤーを'+m.n+'回使う'}[m.k]);
-const claimable=()=>false;
+const claimable=()=>!!(SV.m&&SV.m.some(m=>m.p>=m.n&&!m.c));
 function dailyInit(){const now=new Date(),d=dk(now);if(SV.day===d)return;SV.streak=SV.day===dk(new Date(Date.now()-864e5))?SV.streak+1:1;const b=30+10*Math.min(SV.streak,7);SV.coins+=b;loginMsg='ログインボーナス +'+b+'コイン('+SV.streak+'日連続)';SV.day=d;
 const sd=d.split('-').reduce((a,v)=>a*31+ +v,7),ix=[];for(let k=0;ix.length<3&&k<60;k++){const i=(sd*(k+3)+k*5)%MPOOL.length;if(!ix.includes(i))ix.push(i)}for(let i=0;ix.length<3;i++)if(!ix.includes(i))ix.push(i);
 SV.m=ix.map(i=>Object.assign({},MPOOL[i],{p:0,c:0}));save()}
