@@ -486,6 +486,7 @@ function reset(){nextBossT=50;escN='';cheerT=-99;cdT=2.4;cdK=-1;zmT=0;ultFx=null
 reset();state='home';
 const sx=()=>W/2,sy=()=>H-135,ground=()=>H-30;
 // 調整用パラメータ(T5〜)
+const PREV_MIN=70,PREV_MAX_RATIO=.8,PREV_DOTS=32;
 const HPBAR_H=5,HPBAR_SEG=12,DMG_POP_MIN=13,DMG_POP_K=4,DMG_POP_MAX=30;
 const fmtDmg=d=>d>=10?''+Math.round(d):''+Math.round(d*10)/10;
 function dmgPop(e,d){if(!(d>0))return;e.ld=d;e.hn=(e.hn||0)+1;pop(e.x+rnd(-8,8),e.y-e.r-10,'-'+fmtDmg(d),d<1?'#90a4ae':d<2?col.ink:d<3?'#ef6c00':'#e53935',Math.min(DMG_POP_MAX,DMG_POP_MIN+d*DMG_POP_K))}
@@ -631,7 +632,7 @@ function bdisc(x,y,R,k){gball(x,y,R,k);if(!logo(k,x,y,R*.72))T(k,x,y,Math.max(9,
 function slotLogo(k,cx,cy,mw,mh){let m=IM[k];if(m&&m.naturalWidth){if(m.complete)m=keyOut(k);const nw=m.naturalWidth||m.width,nh=m.naturalHeight||m.height;{const q=Math.min(mw/nw,mh/nh),w=nw*q,h=nh*q;ctx.drawImage(m,cx-w/2,cy-h/2,w,h)}return}T(k,cx,cy,13,'center','#222')}
 function slotLogoOld(k,cx,cy,mw,mh){const m=IM[k];if(m&&m.naturalWidth){const q=Math.min(mw/m.naturalWidth,mh/m.naturalHeight),w=m.naturalWidth*q,h=m.naturalHeight*q;ctx.drawImage(m,cx-w/2,cy-h/2,w,h)}else T(k,cx,cy,13,'center','#222')}
 function logo(k,x,y,r){const m=IM[k];if(m&&m.complete&&m.naturalWidth){const q=1.8*r/Math.max(m.naturalWidth,m.naturalHeight),w=m.naturalWidth*q,h=m.naturalHeight*q;ctx.save();ctx.beginPath();ctx.arc(x,y,r-1,0,7);ctx.clip();ctx.drawImage(m,x-w/2,y-h/2,w,h);ctx.restore();return true}const f=LG[k];if(!f)return false;ctx.save();ctx.translate(x,y);ctx.lineCap='round';ctx.lineJoin='round';f(r);ctx.restore();return true}
-function simPath(a,s,bt,sg,maxD,cb){let x=sx(),y=sy(),d=0,nx=14;const dt=1/120;while(d<maxD){a+=(bt.cu||0)*sg*dt;x+=Math.cos(a)*s*dt;y+=Math.sin(a)*s*dt;if(bt.bn&&(x<bt.r||x>W-bt.r)){a=Math.PI-a;x=Math.max(bt.r,Math.min(W-bt.r,x))}d+=s*dt;if(d>=nx){cb(x,y);nx+=14}}return[x,y,a]}
+function simPath(a,s,bt,sg,maxD,cb,step=14){let x=sx(),y=sy(),d=0,nx=step;const dt=1/120;while(d<maxD&&y>-20){a+=(bt.cu||0)*sg*dt;x+=Math.cos(a)*s*dt;y+=Math.sin(a)*s*dt;if(bt.bn&&(x<bt.r||x>W-bt.r)){a=Math.PI-a;x=Math.max(bt.r,Math.min(W-bt.r,x))}d+=s*dt;if(d>=nx){cb(x,y,d/maxD);nx+=step}}return[x,y,a]}
 const slotR=i=>({x:i?W-104:10,y:H-84,w:94,h:52});
 function rr(x,y,w,h,r){ctx.beginPath();ctx.roundRect?ctx.roundRect(x,y,w,h,r):ctx.rect(x,y,w,h)}
 function draw(){if(state!=='play'){drawScreen();return}
@@ -685,8 +686,8 @@ if(q)T(q===2?'PERFECT':'GREAT',cx0,cy0-R0-14,q===2?20:16,'center',q===2?'#ef6c00
 const v=drag&&state==='play'?pull():null,bx=v?sx()-Math.cos(v.a)*v.l*.6:sx(),by=v?sy()-Math.sin(v.a)*v.l*.6:sy();
 if(state!=='title'&&cur){ctx.save();ctx.lineCap='butt';dial(bx,by,cur.b.r*1.5+17,Math.max(0,combo%10)/10,36);ctx.restore()}
 if(state!=='title'&&cur)(ctx.save(),ctx.shadowColor=powerNext?'#ffd54f':cur.b.k,ctx.shadowBlur=26,disc(bx,by,cur.b.r*1.5,'#fff',cur.b.n,cur.b.t,powerNext?'#ffd54f':cur.b.k),ctx.restore());
-if(v){const bt=cur.b,lv0=SV.up[bt.n]||0,sp=BASE*bt.sp*(1+.03*lv0)*(1+.06*(SV.tp[bt.n]||{s:0}).s)*(.45+.55*v.p),as=fan(bt,lv0,v.a),md=70+v.p*200;
-ctx.fillStyle=(bt.n==='HONDA'&&v.p>vth(lv0))?'#ff1744':col.ink;as.forEach((a,k)=>{const e=simPath(a,sp,bt,sgOf(bt,lv0),md,(x,y)=>{ctx.beginPath();ctx.arc(x,y,2.6,0,7);ctx.fill()});
+if(v){const bt=cur.b,lv0=SV.up[bt.n]||0,sp=BASE*bt.sp*(1+.03*lv0)*(1+.06*(SV.tp[bt.n]||{s:0}).s)*(.45+.55*v.p),as=fan(bt,lv0,v.a),mdMax=Math.max(PREV_MIN+200,H*PREV_MAX_RATIO),md=PREV_MIN+v.p*(mdMax-PREV_MIN),stp=Math.max(14,md/PREV_DOTS);
+ctx.fillStyle=(bt.n==='HONDA'&&v.p>vth(lv0))?'#ff1744':col.ink;as.forEach((a,k)=>{ctx.globalAlpha=1;const e=simPath(a,sp,bt,sgOf(bt,lv0),md,(x,y,f)=>{ctx.globalAlpha=1-.55*f;ctx.beginPath();ctx.arc(x,y,2.6,0,7);ctx.fill()},stp);ctx.globalAlpha=1;
 if(k===(as.length>1?1:0)){ctx.save();ctx.translate(e[0],e[1]);ctx.rotate(e[2]);ctx.beginPath();ctx.moveTo(14,0);ctx.lineTo(-6,-9);ctx.lineTo(-6,9);ctx.closePath();ctx.fill();ctx.restore()}})}
 if(state!=='title'){T(cur.b.n+' '+cur.b.d,sx(),sy()+70,15,'center',col.ink,'800');T('威力'+(cur.b.dmg<1?'☆':'★'.repeat(cur.b.dmg))+'  速度'+'★'.repeat(Math.round(cur.b.sp*2))+(cur.b.multi?'  3連':'')+(cur.b.pierce?'  貫通':'')+(cur.b.cu?'  カーブ':'')+(cur.b.bn?'  反射':'')+(cur.b.splash?(cur.b.n==='LEXUS'?'  衝撃波':'  魅了拡散'):'')+(cur.b.box?'  左右2連':'')+(cur.b.n==='HONDA'?'  強引きVTEC':''),sx(),sy()+90,12,'center',col.ink,'500')}
 // スロット
