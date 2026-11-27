@@ -834,5 +834,6 @@ function bigBoom(x,y){flash=1;shake=.9;burst(x,y,'#fff',50,700);burst(x,y,'#ffd5
 function loop(ts){perfT((ts-last)/1000);const dt=Math.min(.033,(ts-last)/1000||0);last=ts;if(state==='play'&&!paused){if(smT>0)smT-=dt;if(bexp&&(bexp.t-=dt)<=0){bigBoom(bexp.x,bexp.y);bexp=null}if(cdT>0){cdT-=dt;const k=Math.max(0,Math.ceil(cdT/.6)-1);if(cdT>0&&k!==cdK){cdK=k;if(k)snd(520+(3-k)*110,.14,'square',.08);else{if(!sfx('ping',1.6))snd(990,.3,'triangle',.1,1.5)}}}else if(hstop>0)hstop-=dt;else update(dt*(smT>0?.3:1))}draw();requestAnimationFrame(loop)}
 muted=!SV.set.se;bgmOn=SV.set.bgm;dailyInit();lastTt=ttI();resize();requestAnimationFrame(loop);setTimeout(()=>{try{cloudSync()}catch(e){}},1200);document.addEventListener('visibilitychange',()=>{if(document.hidden&&SV.net&&SV.net.acct&&SV.net.dirty){try{cloudSync()}catch(e){}}});
 </script>
+<script>if('serviceWorker' in navigator){window.addEventListener('load',()=>{navigator.serviceWorker.register('sw.js').catch(()=>{})})}</script>
 </body>
 </html>
