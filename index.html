@@ -194,7 +194,7 @@ const pi=PAGES.indexOf(TABOF[state]);if(pi<0||gsel||state==='set'||state==='mode
 if(Math.abs(dx)>55&&Math.abs(dy)<Math.abs(dx)*.7&&s0.x>18&&s0.x<W-18){const n=pi+(dx<0?1:-1);if(n>=0&&n<PAGES.length){if(!sfx('whoosh',.8,0,1.25))snd(500,.06,'sine',.05,1.4);ui(PAGES[n])}}}
 function hmStep(d){const i=MODES.findIndex(m=>m[0]===hm),n=Math.max(0,Math.min(MODES.length-1,i+d));if(n!==i){hm=MODES[n][0];SV.hm=hm;rawSave();snd(600,.05,'square',.04,1.2)}}
 function gTabs(){const w2=(W-40)/2;[['gt:c','日本車','c',carUp()],['gt:s','サプライヤー','s',supUp()]].forEach((a,i)=>btn(a[0],16+i*(w2+8),58,w2,36,a[1]+(a[3]?' ⬆':''),{sz:15,bg:gt===a[2]?'#1565c0':'rgba(128,140,160,.22)',c:gt===a[2]?'#fff':col.ink}))}
-function rTabs(){const w3=(W-32-8)/2;[['rt:r','記録','r'],['rt:t','称号','t']].forEach((a,i)=>btn(a[0],16+i*(w3+8),58,w3,34,a[1],{sz:14,bg:rt===a[2]?'#1565c0':'rgba(128,140,160,.22)',c:rt===a[2]?'#fff':col.ink}))}
+function rTabs(){const w3=(W-32-16)/3;[['rt:r','記録','r'],['rt:m','ミッション','m'],['rt:t','称号','t']].forEach((a,i)=>{const x=16+i*(w3+8);btn(a[0],x,58,w3,34,a[1],{sz:14,bg:rt===a[2]?'#1565c0':'rgba(128,140,160,.22)',c:rt===a[2]?'#fff':col.ink});if(a[2]==='m'&&claimable()){ctx.beginPath();ctx.arc(x+w3-10,66,4,0,7);ctx.fillStyle=col.acc;ctx.fill()}})}
 function gSheet(){const y0=Math.max(56,Math.min(H*.16,H-BAR-500)),h=H-BAR-y0,isC=gsel.startsWith('car:'),key=gsel.slice(4);
 btn('gclose',0,0,W,H,'',{bg:'rgba(0,0,0,.45)',line:'rgba(0,0,0,0)'});rr(8,y0,W-16,h+20,20);ctx.fillStyle=col.bg;ctx.fill();ctx.lineWidth=2;ctx.strokeStyle='rgba(128,140,160,.6)';ctx.stroke();btn('gnop',8,y0,W-16,h,'',{bg:'rgba(0,0,0,0)',line:'rgba(0,0,0,0)'});
 rr(W/2-24,y0+7,48,4,2);ctx.fillStyle='rgba(128,140,160,.6)';ctx.fill();btn('gclose',W-54,y0+10,42,36,'✕',{sz:18});
