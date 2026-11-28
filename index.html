@@ -217,7 +217,7 @@ if(q.nw){nsLvPanel(q,y0);return}T(q.tr[0]+q.tr[1],24,y0+426,12,'left',col.sub,'5
 const cost=L<5?supCost(L):0,can=L<5&&SV.coins>=cost;btn('spu:'+q.k,24,y0+446,W-48,46,L>=5?'MAX':'強化  '+cost,{sz:18,bg:can?'#2e7d32':undefined,c:can?'#fff':col.sub})}}
 const tfx=[],cf=[];let stPrev='',stT=0;
 function uiTap(p,p2){tfx.push({x:p.x,y:p.y,t:performance.now()});if(state==='over'&&performance.now()-over0<700)return;for(let i=btns.length-1;i>=0;i--){const b=btns[i];if(inR(p,b)){if(p2&&!(p2.x>=b.x-8&&p2.x<=b.x+b.w+8&&p2.y>=b.y-8&&p2.y<=b.y+b.h+8))return;if(b.id!=='x'&&!sfx('click',.8,.5))snd(700,.03,'sine',.04,1.2);ui(b.id);return}}}
-function ui(id){if(gpull&&state==='gacha'){if(gpull.busy)return;if(id==='gskip')gpull.skip=1;else if(id==='gok')gpull=null;else if(id==='gresend'&&gpull.resend)gachaPull(gpull.n,gpull.req);return}if(gh&&state==='gacha'){if(id==='ghclose'||id==='ghbg')gh=null;return}if(rubyPop){if(id==='rbok'||(id==='rbbg'&&performance.now()-rubyPop.t0>600))rubyPop=null;return}drag=null;if(id!=='retry'&&id!=='go')paused=false;snd(500,.06,'square',.05,1.3);if(id.startsWith('tab:'))id=id.slice(4);{const pi=PAGES.indexOf(id),ci=PAGES.indexOf(TABOF[state]);sdir=(pi>=0&&ci>=0&&pi!==ci)?Math.sign(pi-ci):0}
+function ui(id){if(gpull&&state==='gacha'){if(gpull.busy)return;if(gpull.cards&&gpull.cards.length===1&&!gpull.dup&&!gpull.err){if(!gpull.done){gpull.skip=1;return}if(id==='gok')gpull=null;else if(id==='gagain'){gpull=null;gachaPull(1)}return}if(id==='gskip')gpull.skip=1;else if(id==='gok')gpull=null;else if(id==='gresend'&&gpull.resend)gachaPull(gpull.n,gpull.req);return}if(gh&&state==='gacha'){if(id==='ghclose'||id==='ghbg')gh=null;return}if(rubyPop){if(id==='rbok'||(id==='rbbg'&&performance.now()-rubyPop.t0>600))rubyPop=null;return}drag=null;if(id!=='retry'&&id!=='go')paused=false;snd(500,.06,'square',.05,1.3);if(id.startsWith('tab:'))id=id.slice(4);{const pi=PAGES.indexOf(id),ci=PAGES.indexOf(TABOF[state]);sdir=(pi>=0&&ci>=0&&pi!==ci)?Math.sign(pi-ci):0}
 if(id==='home'){state='home';rstArm=false}else if(id==='rank'){rstArm=false;if(NET.on()&&!(SV.net&&SV.net.joined))openJoin('new');else if(NET.on()&&!SV.net.acct&&!SV.net.skip)openJoin('setpw');else{state='rank';fetchBoard()}}else if(id==='syncc'){if(cs.conf){applyCloud(cs.conf);cs.conf=null;cs.msg='同期済み'}state='home'}else if(id==='syncl'){if(cs.conf){SV.net.srev=cs.conf.rev;SV.net.dirty=1;cs.gen++;cs.conf=null;rawSave();cloudSync()}state='home'}else if(id==='logout'){doLogout()}else if(id==='rkretry'){fetchBoard()}else if(id==='resend'){if(run&&run.sent==='err')submitRun(run)}else if(id==='acct'){openJoin('new')}else if(id==='setpw'){openJoin('setpw')}else if(id.startsWith('rk:')){const v=id.slice(3);if(v==='all'||v==='week'||v==='day'||v==='league')rk.kind=v;else rk.mode=v;fetchBoard()}else if(id==='mis'||id==='title'){rt=id==='mis'?'m':'t';state='rec';gsel=''}else if(id==='sel'){state='home'}else if(['garage','zukan','rec','set','join'].includes(id)){state=id;rstArm=false;gsel=''}
 else if(id.startsWith('hm:')){hm=id.slice(3);SV.hm=hm;rawSave()}else if(id==='hmp'||id==='hmn'){hmStep(id==='hmn'?1:-1)}else if(id.startsWith('hs:')){hs=+id.slice(3);SV.hs=hs;rawSave()}else if(id.startsWith('hc:')){tsel=id.slice(3);gsel='car:'+tsel}else if(id.startsWith('df:')){const i=+id.slice(3);if(difOk(i)){dif=i;SV.df=i;rawSave()}else loginMsg='🔒 '+DF[i].n+'は'+(i===1?'ノーマル':'ハード')+'でボス戦を3回クリアで解放'}else if(id==='sortie'){state='mode'}else if(id==='go'){if(hm==='stage')startGame('country',hs);else if(hm==='daily')startGame('time',0,1);else startGame(hm)}else if(id.startsWith('gt:')){gt=id.slice(3);gsel=''}else if(id.startsWith('gs:')){tsel=id.slice(3);gsel='car:'+tsel}else if(id.startsWith('gp:')){gsel='sup:'+id.slice(3);if(id.startsWith('gp:n_'))supStLoad(true)}else if(id==='gclose'){gsel=''}else if(id.startsWith('gg:')){state='garage';gt='s';gsel='sup:'+id.slice(3)}else if(id.startsWith('rt:')){rt=id.slice(3)}else if(id.startsWith('rdf:')){rdf=+id.slice(4)}else if(id==='gachaGo'){gachaOpen()}else if(id.startsWith('nlu:')){nsLevelUp(id.slice(4))}else if(id.startsWith('gpull:')){gachaPull(+id.slice(6))}else if(id==='ghist'){gachaHist()}
 else if(id==='start')startGame('normal');else if(id==='time')startGame('time');else if(/^c\d$/.test(id))startGame('country',+id[1]);else if(id==='retry')startGame(mode,stage,dlyOn);
@@ -647,7 +647,7 @@ const rh=Math.min(26,(h-60)/20);gh.rows.slice(0,20).forEach((r,i)=>{const yy=y+5
 const GACHA_RETRY=3,GFLIP_T0=.45,GFLIP_GAP=.28,GFLIP_DUR=.32,GFLIP_SP=.55;
 let gpull=null;
 function uuid4(){try{if(crypto.randomUUID)return crypto.randomUUID()}catch(e){}const b=crypto.getRandomValues(new Uint8Array(16));b[6]=b[6]&15|64;b[8]=b[8]&63|128;const h=[...b].map(x=>x.toString(16).padStart(2,'0')).join('');return h.slice(0,8)+'-'+h.slice(8,12)+'-'+h.slice(12,16)+'-'+h.slice(16,20)+'-'+h.slice(20)}
-async function gachaPull(n,req0){if(gpull&&gpull.busy)return;const c=GACHA_COST[n],b=rubyShown();if(!req0&&(!gachaNet()||b==null||b<c))return;const req=req0||uuid4();gpull={busy:1,req,n,msg:'通信中...'};let r=null,err=null;
+async function gachaPull(n,req0){if(gpull&&gpull.busy)return;const c=GACHA_COST[n],b=rubyShown();if(!req0&&(!gachaNet()||b==null||b<c))return;const req=req0||uuid4();gpull={busy:1,req,n,msg:'まわしています…'};let r=null,err=null;
 for(let i=0;i<GACHA_RETRY;i++){try{r=await rpc('gacha_pull',{p_count:n,p_req:req});err=null;break}catch(e){err=e;if(!e.timeout)break;gpull.msg='通信が混み合っています… 同じ回で再送中 ('+(i+2)+'/'+GACHA_RETRY+')'}}
 if(!r){gpull={err:(err&&err.timeout?NET_BUSY:'通信できませんでした')+'\n同じ回のまま再送できます(二重には引かれません)',req,n,resend:1};return}
 if(!r.ok){if(typeof r.balance==='number')rubySet(r.balance);gpull={err:r.reason==='no_ruby'?'ルビーが足りません':'引けませんでした ('+r.reason+')'};return}
@@ -667,7 +667,7 @@ function fitC2(q,x,y,mw,sz,c,wt){ctx.font=(wt||'700')+' '+sz+'px '+FONT;const w=
 function drawGachaPull(){const now=performance.now(),g=gpull;btns.push({id:'gpbg',x:0,y:0,w:W,h:H});ctx.save();ctx.fillStyle='rgba(6,8,14,.86)';ctx.fillRect(0,0,W,H);ctx.restore();
 if(g.busy){const a=now/300;T('◆',W/2,H*.4,60+6*Math.sin(a*3),'center',RUBY_C,'900');T(g.msg||'通信中...',W/2,H*.4+60,13,'center','#fff','700');return}
 if(g.err){g.err.split('\n').forEach((l,i)=>T(l,W/2,H*.4+i*22,i?12:15,'center',i?'#cfd8dc':'#ff8a80','800'));if(g.resend)btn('gresend',W/2-110,H*.4+56,220,44,'同じ回で再送する',{bg:'#2e7d32',c:'#fff',sz:15});btn('gok',W/2-60,H*.4+(g.resend?110:56),120,40,'閉じる',{sz:15});return}
-const el=(now-g.t0)/1000,n=g.cards.length,one=n<=1,cols=one?1:5,gap=8,cw=one?Math.min(220,W-80):(W-32-gap*(cols-1))/cols,ch=one?cw*1.4:cw*1.45,rows=Math.ceil(n/cols),gx=(W-(cw*cols+gap*(cols-1)))/2,gy=Math.max(70,H*.42-(rows*ch+gap*(rows-1))/2);let all=true;
+if(g.cards.length===1&&!g.dup){drawGachaSingle(g);return}const el=(now-g.t0)/1000,n=g.cards.length,one=n<=1,cols=one?1:5,gap=8,cw=one?Math.min(220,W-80):(W-32-gap*(cols-1))/cols,ch=one?cw*1.4:cw*1.45,rows=Math.ceil(n/cols),gx=(W-(cw*cols+gap*(cols-1)))/2,gy=Math.max(70,H*.42-(rows*ch+gap*(rows-1))/2);let all=true;
 g.cards.forEach((c,i)=>{const t0=g.skip?-9:gFlipAt(i),p=Math.max(0,Math.min(1,(el-t0)/GFLIP_DUR));if(p<1)all=false;if(p>=.5&&!c.fx){c.fx=1;if(c.r>=5){flash=.6;if(!sfx('fanfare',.9,2.6))snd(1046,.4,'triangle',.1,1.5)}else if(c.r>=4){flash=.35;if(!sfx('sparkle',.9))snd(880,.25,'triangle',.09,1.4)}else snd(500+c.r*120,.06,'triangle',.05,1.2)}
 gCard(c,gx+(i%cols)*(cw+gap),gy+(i/cols|0)*(ch+gap),cw,ch,p,now)});
 if(!g.skip&&!all){btn('gskip',W-96,24,80,34,'スキップ',{sz:13});return}
@@ -716,6 +716,50 @@ btn(can?'nlu:'+key:'x',24,y0+446,W-48,46,mx?'MAX':'レベルアップ  かけら
 const SCORE_SAFE_KILL=380,SCORE_SAFE_STAGE=1950;
 const scoreCap=()=>(run&&run.kills|0)*SCORE_SAFE_KILL+SCORE_SAFE_STAGE*(stage+1);
 function scoreClamp(){if(mode==='tut')return;const c=scoreCap();if(score>c){score=c;if(run)run.capped=1}}
+// L2: 単発ガチャ演出(暗転→カプセル出現→揺れ→開封→ロゴカード)。サーバー仕様には触れず表示のみ
+const GS_DARK=.15,GS_APPEAR=.25,GS_SHAKE0=.8,GS_SHAKE_STEP=.1,GS_BOUNCE=.45,GS_SLOW=.3,GS_SLOW_REAL=1,GS_TICK=.12;
+const gShakeT=r=>GS_SHAKE0+GS_SHAKE_STEP*(Math.max(1,r)-1);
+const gOpenT=r=>GS_DARK+GS_APPEAR+gShakeT(r);
+const gEndT=r=>gOpenT(r)+GS_BOUNCE;
+function gEff(r,el){if(r<5)return el;const a=gOpenT(r)-.3,b=a+GS_SLOW_REAL;if(el<a)return el;if(el<b)return a+(el-a)*GS_SLOW;return a+GS_SLOW*GS_SLOW_REAL+(el-b)}
+function gRealEnd(r){return r<5?gEndT(r):gEndT(r)+GS_SLOW_REAL*(1-GS_SLOW)}
+function logoImg(key,cx,cy,mw,mh){const m=IM[key];if(m&&m.complete&&m.naturalWidth){const q=Math.min(mw/m.naturalWidth,mh/m.naturalHeight),w=m.naturalWidth*q,h=m.naturalHeight*q;ctx.drawImage(m,cx-w/2,cy-h/2,w,h);return true}return false}
+function gOutLong(c){return c.out==='new'?'':c.out==='shard'?'所持済み → かけら×1 に変換':c.out==='coins'?'最大レベルのため → コイン+'+c.coins+' に変換':c.key==='universal'?'万能かけら×1(どの会社にも使える)':'前回の結果(受取済み)'}
+function capsule(x,y,R,c,rot,open){ctx.save();ctx.translate(x,y);ctx.rotate(rot);const sep=open*R*1.6,al=1-open;ctx.globalAlpha=Math.max(0,al);
+ctx.save();ctx.translate(0,-sep);ctx.beginPath();ctx.arc(0,0,R,Math.PI,0);ctx.closePath();const g1=ctx.createLinearGradient(0,-R,0,0);g1.addColorStop(0,'#fff');g1.addColorStop(.35,c);g1.addColorStop(1,c);ctx.fillStyle=g1;ctx.fill();ctx.restore();
+ctx.save();ctx.translate(0,sep);ctx.beginPath();ctx.arc(0,0,R,0,Math.PI);ctx.closePath();const g2=ctx.createLinearGradient(0,0,0,R);g2.addColorStop(0,'#f5f5f5');g2.addColorStop(1,'#b0bec5');ctx.fillStyle=g2;ctx.fill();ctx.restore();
+if(open<=0){ctx.fillStyle='#263238';ctx.fillRect(-R,-4,R*2,8);ctx.beginPath();ctx.arc(0,0,R,0,7);ctx.lineWidth=3;ctx.strokeStyle='rgba(0,0,0,.35)';ctx.stroke();ctx.beginPath();ctx.ellipse(-R*.38,-R*.5,R*.22,R*.1,-.6,0,7);ctx.fillStyle='rgba(255,255,255,.75)';ctx.fill()}ctx.restore()}
+function gSfxOpen(r){if(r>=5){if(!sfx('fanfare',1,3))snd(1046,.4,'triangle',.1,1.5);setTimeout(()=>sfx('cheer',1),260)}else if(r>=4){if(!sfx('fanfare',.9,2.6))snd(988,.35,'triangle',.1,1.4)}else if(r>=3){if(!sfx('sparkle',.9))snd(880,.2,'triangle',.08,1.4);sfx('ping',.8)}else if(r>=2){if(!sfx('sparkle',.8))snd(780,.18,'triangle',.07,1.3)}else{if(!sfx('ping',.6))snd(660,.12,'triangle',.06,1.2)}}
+function gBurst(g,x,y,c,r){const n=24+r*10;for(let i=0;i<n;i++){const a=i/n*6.283+rnd(-.1,.1),v=rnd(.4,1)*(260+r*90);g.ps.push({x,y,vx:Math.cos(a)*v,vy:Math.sin(a)*v,life:rnd(.5,1)+r*.1,c:i%3?c:'#fff',r:rnd(2.5,5.5)})}}
+function drawGachaSingle(g){const now=performance.now(),c=g.cards[0],r=c.r||1,C=RAR_C[r]||'#90a4ae';const el=g.skip?99:(now-g.t0)/1000,et=g.skip?99:gEff(r,el),dt=Math.min(.05,(now-(g.lt||now))/1000);g.lt=now;g.ps=g.ps||[];
+const TO=gOpenT(r),done=et>=gEndT(r);g.done=done;
+// ticks while shaking
+const s0=GS_DARK+GS_APPEAR;if(!g.skip&&et>=s0&&et<TO){const k=Math.floor((et-s0)/GS_TICK);if(k!==g.tk){g.tk=k;if(!sfx('click',.45,0,1+.05*k))snd(1200+k*20,.03,'square',.03,1)}}
+if(et>=TO&&!g.op){g.op=1;if(!g.skip){shake=Math.min(.7,.1+.12*r);g.fl=1;gBurst(g,W/2,H*.4,C,r);gSfxOpen(r)}}
+shake=Math.max(0,shake-dt*1.4);g.fl=Math.max(0,(g.fl||0)-dt*2.4);
+ctx.save();if(shake>0)ctx.translate(rnd(-1,1)*shake*28,rnd(-1,1)*shake*28);
+const da=Math.min(1,et/GS_DARK);ctx.fillStyle='rgba(6,8,14,'+(.9*da)+')';ctx.fillRect(-40,-40,W+80,H+80);
+if(et>=TO&&r>=4){ctx.save();ctx.translate(W/2,H*.4);ctx.rotate(now/2400);for(let i=0;i<16;i++){ctx.rotate(Math.PI/8);ctx.beginPath();ctx.moveTo(0,0);ctx.lineTo(Math.max(W,H),-40);ctx.lineTo(Math.max(W,H),40);ctx.closePath();ctx.fillStyle=r>=5?'hsla('+((i*22+now/8)%360|0)+',90%,60%,.14)':'rgba(206,147,216,.12)';ctx.fill()}ctx.restore()}
+// capsule
+if(et>=GS_DARK){const ap=Math.min(1,(et-GS_DARK)/GS_APPEAR),sc=ap<1?(.4+.75*ap-.15*Math.max(0,ap-.8)/.2):1,sk=et>=s0&&et<TO?(et-s0):0,amp=(.07+.035*r)*Math.min(1,sk*3),rot=amp*Math.sin(sk*26),op=et>=TO?Math.min(1,(et-TO)/.3):0;if(op<1)capsule(W/2+rot*40,H*.4,56*sc,C,rot,op)}
+// particles
+for(const p of g.ps){p.life-=dt;p.x+=p.vx*dt;p.y+=p.vy*dt;p.vy+=260*dt;if(p.life>0){ctx.globalAlpha=Math.min(1,p.life*2);ctx.beginPath();ctx.arc(p.x,p.y,p.r,0,7);ctx.fillStyle=p.c;ctx.fill()}}ctx.globalAlpha=1;g.ps=g.ps.filter(p=>p.life>0);
+// card
+if(et>=TO){const p=Math.min(1,(et-TO)/GS_BOUNCE),s=p<.6?.5+.62*(p/.6):1.12-.12*((p-.6)/.4),cw=Math.min(300,W-48),ch=Math.min(360,H*.52),cx=W/2,cy=H*.43;ctx.save();ctx.translate(cx,cy);ctx.scale(s,s);
+if(r>=5){ctx.shadowColor='hsl('+((now/5)%360|0)+',95%,60%)';ctx.shadowBlur=36}else if(r>=4){ctx.shadowColor='#ce93d8';ctx.shadowBlur=26}else{ctx.shadowColor=C;ctx.shadowBlur=14}
+rr(-cw/2,-ch/2,cw,ch,16);ctx.fillStyle='#fff';ctx.fill();ctx.shadowBlur=0;ctx.lineWidth=r>=4?4:2;ctx.strokeStyle=r>=5?'hsl('+((now/5)%360|0)+',90%,55%)':C;ctx.stroke();
+ctx.save();rr(-cw/2,-ch/2,cw,ch,16);ctx.clip();ctx.fillStyle=C;ctx.fillRect(-cw/2,-ch/2,cw,40);ctx.restore();T(stars(r),0,-ch/2+20,20,'center','#fff','900');
+const co=NCOK[c.key];if(c.key==='universal'){T('◆',0,-ch/2+118,64,'center','#90a4ae','900')}else if(!logoImg(c.key,0,-ch/2+118,cw*.74,ch*.28)){blogo(co?co.n:c.key,0,-ch/2+118,48)}
+fitC2(gName(c),0,-ch/2+200,cw-24,26,'#1b1f27','900');if(co)TC(co.s,0,-ch/2+226,11,'center','#78909c','600');
+if(co){const L=Math.max(1,gLv(c.key)),q=SUP.find(z=>z.key===c.key);fitC2(NSD[c.key][0]+': '+(q?q.ds[L-1]:''),0,-ch/2+256,cw-28,13,'#37474f','800')}
+const ol=gOutLong(c);if(ol)fitC2(ol,0,ch/2-26,cw-24,14,c.out==='coins'?'#ef6c00':'#1565c0','900');
+if(c.out==='new'){ctx.save();ctx.translate(cw/2-34,-ch/2+56);ctx.rotate(.25);rr(-34,-14,68,28,14);ctx.fillStyle='#e53935';ctx.fill();T('NEW!',0,1,16,'center','#fff','900');ctx.restore()}
+ctx.restore()}
+if(g.fl>0){ctx.globalAlpha=g.fl*.55;ctx.fillStyle=r>=5?'#fff':C;ctx.fillRect(-40,-40,W+80,H+80);ctx.globalAlpha=1}
+ctx.restore();
+if(!done){T('タップでスキップ',W/2,H-BAR-24,12,'center','rgba(255,255,255,.6)','700');return}
+const by=Math.min(H-BAR-62,H*.43+Math.min(360,H*.52)/2+18),bw=(W-48-10)/2,bal=rubyShown(),can=gachaNet()&&bal!=null&&bal>=GACHA_COST[1];
+btn('gok',24,by,bw,46,'閉じる',{sz:16});btn(can?'gagain':'x',24+bw+10,by,bw,46,'もう一度まわす',{sub:'◆ '+GACHA_COST[1],sz:15,bg:can?'#2e7d32':undefined,c:can?'#fff':col.sub})}
 const HARD_DMG_MIN=1.5,HS_RATE=.18,HS_MIN_STAGE=3,HS_MIN_T=35;
 const hsOk=()=>mode==='normal'&&!dlyOn?stage>=HS_MIN_STAGE:t>=HS_MIN_T;
 function hardBlock(e,d,bx,by){if(!e.hs||d>=HARD_DMG_MIN)return false;e.arf=.25;ring(bx,by,'#b0bec5',e.r*1.3);burst(bx,by,'#eceff1',10,240);clank();pop(e.x,e.y-e.r-12,'弾かれた! (威力'+fmtDmg(d)+')','#546e7a',15);if(!run.hsH){run.hsH=1;say('🔩 硬殻:威力'+HARD_DMG_MIN+'未満は弾かれる! 強く引いてPERFECT')}return true}
