@@ -1,5 +1,6 @@
 -- ============================================================
--- フェーズB1: サプライヤーガチャ本体（未適用・レビュー用ドラフト）
+-- フェーズB1: サプライヤーガチャ本体
+-- 適用日: 2026-11-28 / 適用方法: Supabase Management API（適用・検証済み）
 -- gacha_pull / level_up_supplier / supplier_state / gacha_history
 -- 前提: フェーズA1・A2 適用済み（ruby_wallets / supplier_shards / gacha_log 等）
 -- 仕様: ユーザー確定プラン（2026-11-27）＋万能かけら追加合意分
