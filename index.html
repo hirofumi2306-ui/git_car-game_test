@@ -299,7 +299,7 @@ const SCR={
 gacha(){TC('GACHA',20,16,12,'left',col.acc,'600');T('サプライヤーガチャ',20,38,22,'left',col.ink,'900');{const b=rubyShown();TC('RUBY',W-20,16,10,'right',col.sub,'600');const s=b==null?'—':''+b;ctx.font='700 24px '+FONT;const w=ctx.measureText(s).width;TC(s,W-20,38,24,'right',col.ink,'700');T('◆',W-20-w-12,39,18,'center',RUBY_C,'900')}
 const net=gachaNet(),bal=rubyShown(),pity=ruby.pity|0,busy=!!(typeof gpull!=='undefined'&&gpull&&gpull.busy);let y=62;
 rr(16,y,W-32,64,10);ctx.fillStyle=col.surf;ctx.fill();ctx.lineWidth=1;ctx.strokeStyle=col.line;ctx.stroke();TC('RATES',28,y+13,10,'left',col.sub,'600');const pw=(W-56)/5;GACHA_RATES.forEach((a,i)=>{const x=28+i*pw;T('★'+a[0],x+pw/2,y+31,13,'center',RAR_C[a[0]],'900');TC(a[1],x+pw/2,y+49,15,'center',col.ink,'700')});y+=70;
-T('★1は「万能かけら×1」(どの会社のレベルアップにも使える)',W/2,y+6,11,'center',col.sub,'700');y+=20;
+T('★1は「コイン+300」/ 所持済みの会社が出たら ★×300コインに変換',W/2,y+6,11,'center',col.sub,'700');y+=20;
 rr(16,y,W-32,40,10);ctx.fillStyle=col.surf;ctx.fill();ctx.lineWidth=1.5;ctx.strokeStyle='#8e24aa';ctx.stroke();T('★4以上確定まで あと '+Math.max(1,GACHA_PITY-pity)+' 回',W/2,y+14,16,'center',col.ink,'900');T('10連は★3以上が1枚確定',W/2,y+31,10,'center',col.sub,'700');y+=48;
 const bw=(W-32-10)/2;[[1,'1回'],[10,'10連']].forEach((a,i)=>{const c=GACHA_COST[a[0]],ok=net&&!busy&&bal!=null&&bal>=c;btn(ok?'gpull:'+a[0]:'x',16+i*(bw+10),y,bw,58,a[1],{sub:'◆ '+c+' ルビー',sz:20,bg:ok?'#2e7d32':undefined,c:ok?'#fff':col.sub})});y+=66;
 const msg=!rubyOn()?'ガチャはアカウント登録(ログイン)が必要です':!net?'通信できないため引けません':bal==null?'残高を確認中...':bal<GACHA_COST[1]?'ルビーが足りません':bal<GACHA_COST[10]?'10連にはルビーが足りません':'';if(msg)T(msg,W/2,y+4,12,'center',msg.includes('足り')?col.sub:'#c62828','800');y+=16;
@@ -627,7 +627,8 @@ function zukanU(){const rh=Math.min(58,(H-BAR-124)/BT.length);BT.forEach((b,i)=>
 const NCO=[{key:'mitsuba',n:'ミツバ',s:'MITSUBA',g:'JP',r:2},{key:'astemo',n:'日立Astemo',s:'ASTEMO',g:'JP',r:2},{key:'akebono',n:'曙ブレーキ',s:'AKEBONO',g:'JP',r:2},{key:'advics',n:'アドヴィックス',s:'ADVICS',g:'JP',r:3},{key:'toray',n:'東レ',s:'TORAY',g:'JP',r:3},{key:'asahi_kasei',n:'旭化成',s:'ASAHI-K',g:'JP',r:3},{key:'sumitomo_electric',n:'住友電工',s:'SUMIDEN',g:'JP',r:3},{key:'mitsubishi_chemical',n:'三菱ケミカル',s:'MCHEM',g:'JP',r:3},{key:'brembo',n:'ブレンボ',s:'BREMBO',g:'OS',r:4},{key:'zf',n:'ZF',s:'ZF',g:'OS',r:4},{key:'tsmc',n:'TSMC',s:'TSMC',g:'OS',r:5},{key:'catl',n:'CATL',s:'CATL',g:'OS',r:5}];
 const NCOK={};NCO.forEach(c=>{NCOK[c.key]=c;if(IM[c.key])IM[c.n]=IM[c.key]});
 const RAR_C={5:'#ff6d00',4:'#8e24aa',3:'#1e88e5',2:'#43a047',1:'#90a4ae'};
-const GACHA_RATES=[[5,'1%'],[4,'7%'],[3,'17%'],[2,'30%'],[1,'45%']],GACHA_COST={1:30,10:270},GACHA_PITY=40;
+// 価格・提供割合はサーバー(phase-b2)の値をそのまま表示する(端末で再計算しない)
+const GACHA_RATES=[[5,'5%'],[4,'13%'],[3,'20%'],[2,'32%'],[1,'30%']],GACHA_COST={1:10,10:90},GACHA_PITY=40;
 const SUPST_KEY='lgsupst';
 let gst={lv:{},sh:{},univ:0,ok:0,at:0,busy:0,err:0};
 try{const c=JSON.parse(localStorage.getItem(SUPST_KEY)||'null');if(c&&c.lv)gst=Object.assign(gst,{lv:c.lv,sh:c.sh||{},univ:c.univ||0,aid:c.aid})}catch(e){}
