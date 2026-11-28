@@ -109,7 +109,7 @@ const sd=d.split('-').reduce((a,v)=>a*31+ +v,7),ix=[];for(let k=0;ix.length<3&&k
 SV.m=ix.map(i=>Object.assign({},MPOOL[i],{p:0,c:0}));save()}
 function startGame(m,idx,d){if(m==='tut'){startTut();return}if(!difOk(dif)){dif=0;SV.df=0}dif=difFor(m);escN='';dlyOn=!!d;if(dlyOn){dlyInit();if(!SV.dl||SV.dl.d!==dly.d){SV.dl={d:dly.d,n:0};delete SV.best.daily}if(SV.dl.n>=3){dlyOn=false;state='home';return}SV.dl.n++;rawSave();dRng=mul32(dly.seed);m='time'}mode=m;reset();if(m==='country')stage=idx;else if(dlyOn)stage=dly.st;gmset=GS();gs=newGs();mapCx=curS().cx;mapCy=curS().cy;run={kills:0,maxCombo:0,supp:0,rec:0,hit:{s:0,g:0,b:0}};run.rm=rmPick();run.wx=wxPick();rivalLoad();timeLeft=90;state='play';banner=2.2}
 function bestGapTxt(prev,sc){if(!prev)return '初記録を目指そう!';const g=Math.max(0,prev-sc);return g===0?'ベストタイ! 新記録まであと 1点':'ベストまであと '+g+'点'}
-function endGame(){if(state!=='play')return;if(mode==='tut'){tut=null;mode='normal';state='home';return}const r=run;r.score=score;r.stage=stage;r.coins=Math.round((Math.floor(score/40)+(mode==='normal'?stage*15:0)+(run.win?150:0))*DFx().rw)+(run.mbC||0)+(run.bc||0);r.lost=lives<=0;const k=bk(),old=SV.best[k]||0;r.prev=old;r.newRec=score>old;if(r.newRec)SV.best[k]=score;
+function endGame(){if(state!=='play')return;if(mode==='tut'){tut=null;mode='normal';state='home';return}scoreClamp();const r=run;r.score=score;r.stage=stage;r.coins=Math.round((Math.floor(score/40)+(mode==='normal'?stage*15:0)+(run.win?150:0))*DFx().rw)+(run.mbC||0)+(run.bc||0);r.lost=lives<=0;const k=bk(),old=SV.best[k]||0;r.prev=old;r.newRec=score>old;if(r.newRec)SV.best[k]=score;
 const t0=ttI(),l0=lvOf(),u0=SUP.filter(supUnl);SV.coins+=r.coins;SV.xp+=Math.floor(score/15)+r.kills;SV.plays++;SV.kills+=r.kills;r.newTt=ttI()>t0?TT[ttI()][1]:'';r.lvUp=lvOf()>l0?lvOf():0;r.newSup=SUP.filter(q=>supUnl(q)&&!u0.includes(q)).map(q=>q.n).concat(r.ps||[]);SV.maxCombo=Math.max(SV.maxCombo,r.maxCombo);if(mode==='normal')SV.bestStage=Math.max(SV.bestStage,stage);
 SV.m.forEach(m=>{if(m.k==='kills')m.p+=r.kills;else if(m.k==='combo')m.p=Math.max(m.p,r.maxCombo);else if(m.k==='score')m.p=Math.max(m.p,score);else if(m.k==='stage'&&mode==='normal')m.p=Math.max(m.p,stage);else if(m.k==='supp')m.p+=r.supp});
 r.near=(mode==='normal'&&stk>0&&curS().q-stk<=4)?'あと'+(curS().q-stk)+'体で次の国でした':'';submitRun(r);lastRes={score:r.score,rank:rankOf(r.score),newRec:r.newRec,coins:r.coins};state='over';over0=performance.now();save()}
@@ -712,6 +712,10 @@ T(mx?'最大レベルに到達しています':'次のLv'+(L+1)+': かけら '+n
 const why=mx?'':busy?'通信中...':!net?'通信できないため強化できません':!enough?'かけらが足りません ('+(sh+un)+'/'+need+')':!coinOk?'コインが足りません':'';
 const m=nlu&&nlu.key===key&&!nlu.busy?nlu.msg:why;if(m)T(m,24,y0+436,11,'left',nlu&&nlu.ok&&m===nlu.msg?'#2e7d32':'#c62828','800');
 btn(can?'nlu:'+key:'x',24,y0+446,W-48,46,mx?'MAX':'レベルアップ  かけら'+need+' + 💰'+cost,{sz:16,bg:can?'#2e7d32':undefined,c:can?'#fff':col.sub})}
+// スコアの安全上限: サーバー検証(score <= kills*400 + 2000*(stage+1))を必ず下回るよう、余裕を持たせて抑える
+const SCORE_SAFE_KILL=380,SCORE_SAFE_STAGE=1950;
+const scoreCap=()=>(run&&run.kills|0)*SCORE_SAFE_KILL+SCORE_SAFE_STAGE*(stage+1);
+function scoreClamp(){if(mode==='tut')return;const c=scoreCap();if(score>c){score=c;if(run)run.capped=1}}
 const HARD_DMG_MIN=1.5,HS_RATE=.18,HS_MIN_STAGE=3,HS_MIN_T=35;
 const hsOk=()=>mode==='normal'&&!dlyOn?stage>=HS_MIN_STAGE:t>=HS_MIN_T;
 function hardBlock(e,d,bx,by){if(!e.hs||d>=HARD_DMG_MIN)return false;e.arf=.25;ring(bx,by,'#b0bec5',e.r*1.3);burst(bx,by,'#eceff1',10,240);clank();pop(e.x,e.y-e.r-12,'弾かれた! (威力'+fmtDmg(d)+')','#546e7a',15);if(!run.hsH){run.hsH=1;say('🔩 硬殻:威力'+HARD_DMG_MIN+'未満は弾かれる! 強く引いてPERFECT')}return true}
@@ -967,7 +971,7 @@ document.addEventListener('visibilitychange',()=>{if(document.hidden){if(state==
 addEventListener('keydown',e=>{if((e.key==='p'||e.key==='Escape')&&state==='play'){paused=!paused;drag=null}});
 let last=0;
 function bigBoom(x,y){flash=1;shake=.9;burst(x,y,'#fff',50,700);burst(x,y,'#ffd54f',70,560);burst(x,y,'#ff6d00',50,460);ring(x,y,'#fff',420);ring(x,y,'#ffd54f',320);ring(x,y,'#ff6d00',220);if(!sfx('boom',1))snd(70,.8,'sawtooth',.14,.4)}
-function loop(ts){perfT((ts-last)/1000);const dt=Math.min(.033,(ts-last)/1000||0);last=ts;if(state==='play'&&!paused){if(smT>0)smT-=dt;if(bexp&&(bexp.t-=dt)<=0){bigBoom(bexp.x,bexp.y);bexp=null}if(cdT>0){cdT-=dt;const k=Math.max(0,Math.ceil(cdT/.6)-1);if(cdT>0&&k!==cdK){cdK=k;if(k)snd(520+(3-k)*110,.14,'square',.08);else{if(!sfx('ping',1.6))snd(990,.3,'triangle',.1,1.5)}}}else if(hstop>0)hstop-=dt;else update(dt*(smT>0?.3:1))}draw();requestAnimationFrame(loop)}
+function loop(ts){perfT((ts-last)/1000);const dt=Math.min(.033,(ts-last)/1000||0);last=ts;if(state==='play'&&!paused){if(smT>0)smT-=dt;if(bexp&&(bexp.t-=dt)<=0){bigBoom(bexp.x,bexp.y);bexp=null}if(cdT>0){cdT-=dt;const k=Math.max(0,Math.ceil(cdT/.6)-1);if(cdT>0&&k!==cdK){cdK=k;if(k)snd(520+(3-k)*110,.14,'square',.08);else{if(!sfx('ping',1.6))snd(990,.3,'triangle',.1,1.5)}}}else if(hstop>0)hstop-=dt;else update(dt*(smT>0?.3:1));scoreClamp()}draw();requestAnimationFrame(loop)}
 muted=!SV.set.se;bgmOn=SV.set.bgm;dailyInit();lastTt=ttI();resize();requestAnimationFrame(loop);setTimeout(()=>{try{cloudSync()}catch(e){}},1200);document.addEventListener('visibilitychange',()=>{if(document.hidden&&SV.net&&SV.net.acct&&SV.net.dirty){try{cloudSync()}catch(e){}}});
 </script>
 <script>if('serviceWorker' in navigator){window.addEventListener('load',()=>{navigator.serviceWorker.register('sw.js').catch(()=>{})})}</script>
