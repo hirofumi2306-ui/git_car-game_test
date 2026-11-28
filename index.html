@@ -210,7 +210,7 @@ else{const q=SUP.find(z=>z.k===key);if(!q)return;const ok=supUnl(q),L=SL(q.k),cx
 if(ok){dial(cx,y0+92,68,L/5,48);if(!blogo(q.n,cx,y0+92,46))T(q.s,cx,y0+92,12,'center','#222','800')}else{ctx.beginPath();ctx.arc(cx,y0+92,46,0,7);ctx.setLineDash([4,5]);ctx.lineWidth=1.5;ctx.strokeStyle=col.line;ctx.stroke();ctx.setLineDash([]);icon('lock',cx,y0+92,26,col.sub,1.8)}
 TC(ok?q.n:'???',cx,y0+176,ok&&q.n.length>9?30:36,'center',col.ink,'700');T(SUPG[q.g].n,cx,y0+202,12,'center',col.sub,'700');
 if(!ok){if(q.nw){T(stars(q.r)+'  サプライヤーガチャで入手',cx,y0+246,16,'center',RAR_C[q.r],'900');fitT(NSD[q.key][0]+': '+q.ds[0],48,y0+274,W-96,13,col.sub);btn('gachaGo',48,y0+300,W-96,46,'◆ ガチャへ',{sz:16,line:RUBY_C,c:RUBY_C});return}T('プレイヤーLv'+q.ul+'で解放',cx,y0+246,16,'center',col.ink,'800');T('または「試作品」ドロップを拾うと解放(約3%)',cx,y0+272,13,'center',col.sub,'600');return}
-rr(24,y0+222,40,20,4);ctx.fillStyle=col.acc;ctx.fill();T('効果',44,y0+232,11,'center','#fff','900');T(q.d,74,y0+232,16,'left',col.ink,'900');T(q.nw?'かけら '+(gst.sh[q.key]|0)+'  万能 '+(gst.univ|0):'拾った回数 '+got,W-24,y0+232,12,'right',col.sub,'600');
+rr(24,y0+222,40,20,4);ctx.fillStyle=col.acc;ctx.fill();T('効果',44,y0+232,11,'center','#fff','900');T(q.d,74,y0+232,16,'left',col.ink,'900');T(q.nw?'Lv '+L+' / 5':'拾った回数 '+got,W-24,y0+232,12,'right',col.sub,'600');
 const bw2=(W-48-10)/2;[[0,'NOW　Lv '+L,q.ds[L-1],col.line],[1,L<5?'NEXT　Lv '+(L+1):'MAX',L<5?q.ds[L]:'最大まで強化済み',col.acc]].forEach(a=>{const x=24+a[0]*(bw2+10),y=y0+254;rr(x,y,bw2,50,6);ctx.lineWidth=1;ctx.strokeStyle=a[3];ctx.stroke();TC(a[1],x+12,y+14,11,'left',a[0]&&L<5?col.acc:col.sub,'600');fitT(a[2],x+12,y+34,bw2-20,14,col.ink)});
 for(let i=0;i<5;i++){const yy=y0+326+i*18;TC('Lv '+(i+1),24,yy,12,'left',i+1===L?col.acc:i+1<L?col.ink:col.sub,'700');T(q.ds[i],64,yy,12,'left',i+1===L?col.ink:i+1<L?col.ink:col.sub,i+1===L?'900':'600')}
 if(q.nw){nsLvPanel(q,y0);return}T(q.tr[0]+q.tr[1],24,y0+426,12,'left',col.sub,'500');
@@ -643,7 +643,7 @@ function gachaOpen(){state='gacha';gsel='';rubyRefresh(true);supStLoad(true)}
 function stars(r){return '★'.repeat(r)}
 function drawGachaHist(){btns.push({id:'ghbg',x:0,y:0,w:W,h:H});ctx.save();ctx.fillStyle='rgba(0,0,0,.55)';ctx.fillRect(0,0,W,H);ctx.restore();const x=16,y=70,w=W-32,h=H-BAR-90;rr(x,y,w,h,16);ctx.fillStyle=col.bg;ctx.fill();ctx.lineWidth=1.5;ctx.strokeStyle=col.line;ctx.stroke();T('ガチャ履歴(新しい順・最大20件)',x+16,y+24,15,'left',col.ink,'900');btn('ghclose',x+w-50,y+8,40,32,'✕',{sz:16});
 if(gh.loading)T('読み込み中...',W/2,y+80,14,'center',col.sub,'700');else if(gh.err)T(gh.err,W/2,y+80,13,'center','#c62828','700');else if(!gh.rows.length)T('まだ履歴がありません',W/2,y+80,14,'center',col.sub,'700');
-const rh=Math.min(26,(h-60)/20);gh.rows.slice(0,20).forEach((r,i)=>{const yy=y+56+i*rh,c=NCOK[r.company_key],d=new Date(r.created_at);T(stars(r.rarity),x+16,yy,12,'left',RAR_C[r.rarity]||col.sub,'900');if(c)blogo(c.n,x+84,yy,Math.min(10,rh/2-2));T(r.company_key==='universal'?'万能かけら':c?c.n:r.company_key,x+100,yy,13,'left',col.ink,'800');T(isNaN(d)?'':(d.getMonth()+1)+'/'+d.getDate()+' '+String(d.getHours()).padStart(2,'0')+':'+String(d.getMinutes()).padStart(2,'0'),x+w-16,yy,11,'right',col.sub,'600')})}
+const rh=Math.min(26,(h-60)/20);gh.rows.slice(0,20).forEach((r,i)=>{const yy=y+56+i*rh,c=NCOK[r.company_key],d=new Date(r.created_at);T(stars(r.rarity),x+16,yy,12,'left',RAR_C[r.rarity]||col.sub,'900');if(c)blogo(c.n,x+84,yy,Math.min(10,rh/2-2));if(r.company_key==='coins')coinIcon(x+84,yy,Math.min(9,rh/2-3));T(r.company_key==='coins'?'コイン+300':r.company_key==='universal'?'万能かけら':c?c.n:r.company_key,x+100,yy,13,'left',col.ink,'800');T(isNaN(d)?'':(d.getMonth()+1)+'/'+d.getDate()+' '+String(d.getHours()).padStart(2,'0')+':'+String(d.getMinutes()).padStart(2,'0'),x+w-16,yy,11,'right',col.sub,'600')})}
 // H2: 抽選の実行(回IDで冪等。タイムアウト時は同じ回IDで再送)と演出
 const GACHA_RETRY=3,GFLIP_T0=.45,GFLIP_GAP=.28,GFLIP_DUR=.32,GFLIP_SP=.55;
 let gpull=null;
@@ -655,8 +655,8 @@ if(!r.ok){if(typeof r.balance==='number')rubySet(r.balance);gpull={err:r.reason=
 if(typeof r.balance==='number')rubySet(r.balance);ruby.pity=r.pity|0;ruby.at=Date.now();if(typeof r.universal_shards==='number')gst.univ=r.universal_shards;
 const coin=r.duplicated?0:Math.max(0,r.coin_bonus|0);if(coin>0){SV.coins+=coin;save()}
 gpull={n,dup:!!r.duplicated,coin,t0:performance.now(),cards:(r.results||[]).map(x=>({r:x.rarity|0,key:x.company_key,out:x.outcome||'',coins:x.coins|0,fx:0}))};supStLoad(true)}
-const gOutTxt=c=>c.out==='new'?'NEW!':c.out==='shard'?'かけら+1':c.out==='coins'?'コイン+'+c.coins:c.out==='universal'||c.key==='universal'?'万能かけら+1':'受取済み';
-const gName=c=>c.key==='universal'?'万能かけら':(NCOK[c.key]?NCOK[c.key].n:c.key);
+const gOutTxt=c=>c.key==='coins'?'コイン+'+(c.coins||300):c.out==='new'?'NEW!':c.out==='shard'?'かけら+1':c.out==='coins'?'コイン+'+c.coins:c.out==='universal'||c.key==='universal'?'万能かけら+1':'受取済み';
+const gName=c=>c.key==='coins'?'コイン':c.key==='universal'?'万能かけら':(NCOK[c.key]?NCOK[c.key].n:c.key);
 function gFlipAt(i){return GFLIP_T0+i*GFLIP_GAP+(gpull.cards.slice(0,i).filter(c=>c.r>=4).length*GFLIP_SP)}
 function gCard(c,x,y,w,h,p,now){const fr=p>=.5,s=Math.abs(Math.cos(p*Math.PI)),cx=x+w/2;ctx.save();ctx.translate(cx,y+h/2);ctx.scale(Math.max(.02,s),1);ctx.translate(-cx,-(y+h/2));const C=RAR_C[c.r]||'#90a4ae';
 if(fr&&c.r>=4){ctx.shadowColor=c.r>=5?'hsl('+((now/6)%360|0)+',90%,60%)':'#ce93d8';ctx.shadowBlur=18+8*Math.sin(now/120)}
@@ -702,17 +702,17 @@ function nsOnHit(e,b){if(b.ult)return;if(ns.ake>0){e.brn=NS_AKE_BURN;e.brd=ns.ak
 function nsReflect(e){ns.mc=0;if(e&&e.hp>0){ultHit(e,ns.mcD);e.stun=Math.max(e.stun||0,NS_MC_STUN);ultO.push({k:'mt',pts:[[sx(),sy()],[e.x,e.y]],t:.2})}ring(sx(),sy(),'#d32f2f',110);say('三菱ケミカル: 攻撃を反射!');snd(1500,.12,'square',.07,.6)}
 function nsHud(){const a=[];if(ns.ast>0)a.push('反発'+ns.ast.toFixed(0));if(ns.ake>0)a.push('摩擦熱'+ns.ake.toFixed(0));if(ns.adv>0)a.push('罠×'+ns.adv);if(ns.tor>0)a.push('軽量×'+ns.tor);if(ns.ask>0)a.push('回収'+ns.ask.toFixed(0));if(ns.se>0)a.push('電撃'+ns.se.toFixed(0));if(ns.mc>0)a.push('反射');if(ns.br>0)a.push('減速'+ns.br.toFixed(0));if(ns.zf>0)a.push('ギア'+ns.zfG);if(ns.ts>0)a.push('先読み'+ns.ts.toFixed(0));if(a.length)fitT(a.join(' '),14,158,W*.5,12,col.ink)}
 // H4: 新サプライヤーのレベルアップ(かけらはサーバーで消費: 会社かけら→万能かけら。コインは成功時のみ端末で差し引く)
-const NLV_NEED=[2,4,8,16],NLV_COIN=[200,400,700,1100],NLV_COOL=700;
+const NLV_COIN=[200,400,700,1100],NLV_COOL=700;// レベルアップはコインのみ(phase-b2)。費用の正は level_up_supplier の coin_cost
 let nlu=null;
 function gstSave(){try{localStorage.setItem(SUPST_KEY,JSON.stringify({lv:gst.lv,sh:gst.sh,univ:gst.univ,aid:gst.aid}))}catch(e){}}
 async function nsLevelUp(key){const now=performance.now();if(nlu&&(nlu.busy||now<(nlu.until||0)))return;const L=gLv(key);if(!L||L>=5)return;const cost=NLV_COIN[L-1];if(SV.coins<cost){nlu={key,msg:'コインが足りません'};return}
-nlu={key,busy:1,msg:'通信中...'};try{const r=await rpc('level_up_supplier',{p_company:key});if(r&&r.ok){SV.coins=Math.max(0,SV.coins-(r.coin_cost|0));save();gst.lv[key]=r.level|0;gst.sh[key]=r.shards_left|0;if(typeof r.universal_left==='number')gst.univ=r.universal_left;gstSave();nlu={key,msg:'Lv'+r.level+' になりました!(かけら'+r.used_company+(r.used_universal?' + 万能'+r.used_universal:'')+' 使用)',ok:1,until:performance.now()+NLV_COOL};snd(800,.15,'sine',.08,1.6);setTimeout(()=>snd(1200,.18,'sine',.08,1.6),90)}
-else{const re=r&&r.reason;nlu={key,msg:re==='shards'?'かけらが足りません ('+(r.have|0)+'/'+(r.need|0)+')':re==='max_level'?'最大レベルです':re==='not_owned'?'まだ所持していません':'レベルアップできませんでした',until:performance.now()+NLV_COOL};supStLoad(true)}}catch(e){nlu={key,msg:e.timeout?NET_BUSY:'通信できませんでした',until:performance.now()+NLV_COOL}}}
-function nsLvPanel(q,y0){const key=q.key,L=gLv(key),sh=gst.sh[key]|0,un=gst.univ|0,mx=L>=5,need=mx?0:NLV_NEED[L-1],cost=mx?0:NLV_COIN[L-1],enough=sh+un>=need,coinOk=SV.coins>=cost,busy=!!(nlu&&nlu.busy),net=gachaNet(),can=!mx&&enough&&coinOk&&!busy&&net;
-T(mx?'最大レベルに到達しています':'次のLv'+(L+1)+': かけら '+need+'枚 + 💰'+cost+'  (会社かけら→万能かけらの順に使用)',24,y0+418,12,'left',col.ink,'800');
-const why=mx?'':busy?'通信中...':!net?'通信できないため強化できません':!enough?'かけらが足りません ('+(sh+un)+'/'+need+')':!coinOk?'コインが足りません':'';
+nlu={key,busy:1,msg:'通信中...'};try{const r=await rpc('level_up_supplier',{p_company:key});if(r&&r.ok){SV.coins=Math.max(0,SV.coins-(r.coin_cost|0));save();gst.lv[key]=r.level|0;gstSave();nlu={key,msg:'Lv'+r.level+' になりました!(コイン -'+(r.coin_cost|0)+')',ok:1,until:performance.now()+NLV_COOL};snd(800,.15,'sine',.08,1.6);setTimeout(()=>snd(1200,.18,'sine',.08,1.6),90)}
+else{const re=r&&r.reason;nlu={key,msg:re==='max_level'?'最大レベルです':re==='not_owned'?'まだ所持していません':'レベルアップできませんでした',until:performance.now()+NLV_COOL};supStLoad(true)}}catch(e){nlu={key,msg:e.timeout?NET_BUSY:'通信できませんでした',until:performance.now()+NLV_COOL}}}
+function nsLvPanel(q,y0){const key=q.key,L=gLv(key),mx=L>=5,cost=mx?0:NLV_COIN[L-1],coinOk=SV.coins>=cost,busy=!!(nlu&&nlu.busy),net=gachaNet(),can=!mx&&coinOk&&!busy&&net;
+T(mx?'最大レベルに到達しています':'次のLv'+(L+1)+'へ: コイン '+cost+'(所持 '+SV.coins+')',24,y0+418,12,'left',col.ink,'800');
+const why=mx?'':busy?'通信中...':!net?'通信できないため強化できません':!coinOk?'コインが足りません':'';
 const m=nlu&&nlu.key===key&&!nlu.busy?nlu.msg:why;if(m)T(m,24,y0+436,11,'left',nlu&&nlu.ok&&m===nlu.msg?'#2e7d32':'#c62828','800');
-btn(can?'nlu:'+key:'x',24,y0+446,W-48,46,mx?'MAX':'レベルアップ  かけら'+need+' + 💰'+cost,{sz:16,bg:can?'#2e7d32':undefined,c:can?'#fff':col.sub})}
+btn(can?'nlu:'+key:'x',24,y0+446,W-48,46,mx?'MAX':'コイン '+cost+' でレベルアップ',{sz:16,bg:can?'#2e7d32':undefined,c:can?'#fff':col.sub})}
 // スコアの安全上限: サーバー検証(score <= kills*400 + 2000*(stage+1))を必ず下回るよう、余裕を持たせて抑える
 const SCORE_SAFE_KILL=380,SCORE_SAFE_STAGE=1950;
 const scoreCap=()=>(run&&run.kills|0)*SCORE_SAFE_KILL+SCORE_SAFE_STAGE*(stage+1);
@@ -725,7 +725,8 @@ const gEndT=r=>gOpenT(r)+GS_BOUNCE;
 function gEff(r,el){if(r<5)return el;const a=gOpenT(r)-.3,b=a+GS_SLOW_REAL;if(el<a)return el;if(el<b)return a+(el-a)*GS_SLOW;return a+GS_SLOW*GS_SLOW_REAL+(el-b)}
 function gRealEnd(r){return r<5?gEndT(r):gEndT(r)+GS_SLOW_REAL*(1-GS_SLOW)}
 function logoImg(key,cx,cy,mw,mh){const m=IM[key];if(m&&m.complete&&m.naturalWidth){const q=Math.min(mw/m.naturalWidth,mh/m.naturalHeight),w=m.naturalWidth*q,h=m.naturalHeight*q;ctx.drawImage(m,cx-w/2,cy-h/2,w,h);return true}return false}
-function gOutLong(c){return c.out==='new'?'':c.out==='shard'?'所持済み → かけら×1 に変換':c.out==='coins'?'最大レベルのため → コイン+'+c.coins+' に変換':c.key==='universal'?'万能かけら×1(どの会社にも使える)':'前回の結果(受取済み)'}
+function coinIcon(x,y,r){ctx.save();const g=ctx.createRadialGradient(x-r*.3,y-r*.3,r*.1,x,y,r);g.addColorStop(0,'#fff59d');g.addColorStop(.55,'#ffca28');g.addColorStop(1,'#f57f17');ctx.beginPath();ctx.arc(x,y,r,0,7);ctx.fillStyle=g;ctx.fill();ctx.lineWidth=Math.max(2,r*.08);ctx.strokeStyle='#e65100';ctx.stroke();ctx.beginPath();ctx.arc(x,y,r*.72,0,7);ctx.lineWidth=Math.max(1,r*.05);ctx.strokeStyle='rgba(230,81,0,.6)';ctx.stroke();ctx.restore();T('C',x,y+r*.04,r*.95,'center','#e65100','900')}
+function gOutLong(c){return c.key==='coins'?'コイン +'+(c.coins||300):c.out==='new'?'':c.out==='shard'?'所持済み → かけら×1 に変換':c.out==='coins'?'所持済み → コイン +'+c.coins+' に変換':c.key==='universal'?'万能かけら×1(どの会社にも使える)':'前回の結果(受取済み)'}
 function capsule(x,y,R,c,rot,open){ctx.save();ctx.translate(x,y);ctx.rotate(rot);const sep=open*R*1.6,al=1-open;ctx.globalAlpha=Math.max(0,al);
 ctx.save();ctx.translate(0,-sep);ctx.beginPath();ctx.arc(0,0,R,Math.PI,0);ctx.closePath();const g1=ctx.createLinearGradient(0,-R,0,0);g1.addColorStop(0,'#fff');g1.addColorStop(.35,c);g1.addColorStop(1,c);ctx.fillStyle=g1;ctx.fill();ctx.restore();
 ctx.save();ctx.translate(0,sep);ctx.beginPath();ctx.arc(0,0,R,0,Math.PI);ctx.closePath();const g2=ctx.createLinearGradient(0,0,0,R);g2.addColorStop(0,'#f5f5f5');g2.addColorStop(1,'#b0bec5');ctx.fillStyle=g2;ctx.fill();ctx.restore();
@@ -750,7 +751,7 @@ if(et>=TO){const p=Math.min(1,(et-TO)/GS_BOUNCE),s=p<.6?.5+.62*(p/.6):1.12-.12*(
 if(r>=5){ctx.shadowColor='hsl('+((now/5)%360|0)+',95%,60%)';ctx.shadowBlur=36}else if(r>=4){ctx.shadowColor='#ce93d8';ctx.shadowBlur=26}else{ctx.shadowColor=C;ctx.shadowBlur=14}
 rr(-cw/2,-ch/2,cw,ch,16);ctx.fillStyle='#fff';ctx.fill();ctx.shadowBlur=0;ctx.lineWidth=r>=4?4:2;ctx.strokeStyle=r>=5?'hsl('+((now/5)%360|0)+',90%,55%)':C;ctx.stroke();
 ctx.save();rr(-cw/2,-ch/2,cw,ch,16);ctx.clip();ctx.fillStyle=C;ctx.fillRect(-cw/2,-ch/2,cw,40);ctx.restore();T(stars(r),0,-ch/2+20,20,'center','#fff','900');
-const co=NCOK[c.key];if(c.key==='universal'){T('◆',0,-ch/2+118,64,'center','#90a4ae','900')}else if(!logoImg(c.key,0,-ch/2+118,cw*.74,ch*.28)){blogo(co?co.n:c.key,0,-ch/2+118,48)}
+const co=NCOK[c.key];if(c.key==='coins'){coinIcon(0,-ch/2+118,44)}else if(c.key==='universal'){T('◆',0,-ch/2+118,64,'center','#90a4ae','900')}else if(!logoImg(c.key,0,-ch/2+118,cw*.74,ch*.28)){blogo(co?co.n:c.key,0,-ch/2+118,48)}
 fitC2(gName(c),0,-ch/2+200,cw-24,26,'#1b1f27','900');if(co)TC(co.s,0,-ch/2+226,11,'center','#78909c','600');
 if(co){const L=Math.max(1,gLv(c.key)),q=SUP.find(z=>z.key===c.key);fitC2(NSD[c.key][0]+': '+(q?q.ds[L-1]:''),0,-ch/2+256,cw-28,13,'#37474f','800')}
 const ol=gOutLong(c);if(ol)fitC2(ol,0,ch/2-26,cw-24,14,c.out==='coins'?'#ef6c00':'#1565c0','900');
@@ -767,7 +768,7 @@ function g10Order(cards){const idx=cards.map((c,i)=>i),mx=Math.max(...cards.map(
 function gMini(c,x,y,w,h,s){const C=RAR_C[c.r]||'#90a4ae',cx=x+w/2,cy=y+h/2;ctx.save();ctx.translate(cx,cy);ctx.scale(s,s);ctx.translate(-cx,-cy);if(c.r>=4){ctx.shadowColor=c.r>=5?'hsl('+((performance.now()/5)%360|0)+',95%,60%)':'#ce93d8';ctx.shadowBlur=16}
 rr(x,y,w,h,8);ctx.fillStyle='#fff';ctx.fill();ctx.shadowBlur=0;ctx.lineWidth=c.r>=4?3:1.5;ctx.strokeStyle=C;ctx.stroke();ctx.save();rr(x,y,w,h,8);ctx.clip();ctx.fillStyle=C;ctx.fillRect(x,y,w,Math.max(12,h*.16));ctx.restore();
 T(stars(c.r),cx,y+Math.max(12,h*.16)/2,Math.min(10,w/c.r/1.1),'center','#fff','900');const co=NCOK[c.key];
-if(c.key==='universal')T('◆',cx,y+h*.42,h*.26,'center','#90a4ae','900');else if(!logoImg(c.key,cx,y+h*.42,w*.84,h*.3))blogo(co?co.n:c.key,cx,y+h*.42,Math.min(w,h)*.2);
+if(c.key==='coins')coinIcon(cx,y+h*.42,Math.min(w,h)*.22);else if(c.key==='universal')T('◆',cx,y+h*.42,h*.26,'center','#90a4ae','900');else if(!logoImg(c.key,cx,y+h*.42,w*.84,h*.3))blogo(co?co.n:c.key,cx,y+h*.42,Math.min(w,h)*.2);
 fitC2(gName(c),cx,y+h*.67,w-6,Math.min(11,w*.16),'#1b1f27','900');fitC2(gOutTxt(c),cx,y+h*.86,w-6,Math.min(11,w*.16),c.out==='new'?'#e53935':c.out==='coins'?'#ef6c00':'#1565c0','900');ctx.restore()}
 function g10Open(g){const k=g.opened;if(k>=g.ord.length)return;const c=g.cards[g.ord[k]],r=c.r||1,C=RAR_C[r];g.opened++;g.ot=performance.now();g.last=k;const p=g10Pos(g,k);gBurst(g,p.x+p.w/2,p.y+p.h/2,C,Math.max(1,r-1));g.fl=r>=4?1:.35;g.flc=r>=5?'#fff':C;shake=Math.min(.6,.04+.1*r);gSfxOpen(r)}
 function g10Pos(g,k){const cols=5,gap=8,cw=(W-32-gap*(cols-1))/cols,ch=cw*1.45,top=Math.max(80,H*.36-ch-gap/2);return{x:16+(k%cols)*(cw+gap),y:top+(k/cols|0)*(ch+gap),w:cw,h:ch}}
@@ -781,9 +782,9 @@ if(g.fl>0){ctx.globalAlpha=g.fl*.45;ctx.fillStyle=g.flc||'#fff';ctx.fillRect(-40
 {const p9=g10Pos(g,9);btn('gskip',W/2-70,p9.y+p9.h+20,140,40,'スキップ',{sz:14})}return}
 // 結果一覧
 T('10連の結果',W/2,58,18,'center','#fff','900');g.ord.forEach((ci,k)=>{const p=g10Pos(g,k);gMini(g.cards[ci],p.x,p.y,p.w,p.h,1)});ctx.restore();
-const p9=g10Pos(g,9);let y=p9.y+p9.h+22;const best=Math.max(...g.cards.map(c=>c.r)),nw=g.cards.filter(c=>c.out==='new').length,sh=g.cards.filter(c=>c.out==='shard').length,un=g.cards.filter(c=>c.key==='universal').length,cv=g.cards.filter(c=>c.out==='coins').length;
+const p9=g10Pos(g,9);let y=p9.y+p9.h+22;const best=Math.max(...g.cards.map(c=>c.r)),nw=g.cards.filter(c=>c.out==='new').length,c1=g.cards.filter(c=>c.key==='coins').length,cv=g.cards.filter(c=>c.out==='coins'&&c.key!=='coins').length;
 T(best>=5?'★5 獲得!!':best>=4?'★4 獲得!':'結果',W/2,y,16,'center',best>=4?RAR_C[best]:'#fff','900');y+=24;
-T('NEW '+nw+'  /  かけらに変換 '+sh+'  /  万能かけら '+un+(cv?'  /  コイン変換 '+cv+'(+'+g.coin+')':''),W/2,y,12,'center','#cfd8dc','800');y+=20;
+T('NEW '+nw+'  /  重複→コイン '+cv+'  /  ★1コイン '+c1+(g.coin?'  /  コイン合計 +'+g.coin:''),W/2,y,12,'center','#cfd8dc','800');y+=20;
 const by=Math.min(H-BAR-58,y+10),bw=(W-48-10)/2,bal=rubyShown(),can=gachaNet()&&bal!=null&&bal>=GACHA_COST[10];btn('gok',24,by,bw,46,'閉じる',{sz:16});btn(can?'gagain10':'x',24+bw+10,by,bw,46,'もう一度 10連',{sub:'◆ '+GACHA_COST[10],sz:15,bg:can?'#2e7d32':undefined,c:can?'#fff':col.sub})}
 const HARD_DMG_MIN=1.5,HS_RATE=.18,HS_MIN_STAGE=3,HS_MIN_T=35;
 const hsOk=()=>mode==='normal'&&!dlyOn?stage>=HS_MIN_STAGE:t>=HS_MIN_T;
