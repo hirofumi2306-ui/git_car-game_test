@@ -142,7 +142,7 @@ $$;
 -- ------------------------------------------------------------
 begin;
 
-drop function public.submit_run(text, integer, integer, integer, integer, integer, date, text);
+drop function public.submit_run(text, integer, integer, integer, integer, integer, date, text, integer);
 
 create function public.submit_run(
   p_mode text, p_score integer, p_kills integer, p_combo integer,
